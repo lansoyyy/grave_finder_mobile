@@ -42,6 +42,8 @@ dependencies:
   fluttertoast:
   get_storage:
   flutter_svg:
+  photo_view:
+
 
 dev_dependencies:
   flutter_test:

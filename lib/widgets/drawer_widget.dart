@@ -11,7 +11,7 @@ class DrawerWidget extends StatelessWidget {
     return Container(
       height: double.infinity,
       width: 250,
-      color: Colors.blue[100],
+      color: background,
       child: SafeArea(
           child: Padding(
         padding: const EdgeInsets.only(top: 20),
@@ -20,8 +20,11 @@ class DrawerWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
+                const SizedBox(
+                  width: 20,
+                ),
                 Container(
                   decoration: BoxDecoration(
                       border: Border.all(color: primary),
@@ -30,28 +33,19 @@ class DrawerWidget extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.all(2.5),
                     child: Image.asset(
-                      'assets/images/RTA logo 1.png',
+                      'assets/images/profile.png',
                       height: 35,
                     ),
                   ),
                 ),
+                const SizedBox(
+                  width: 10,
+                ),
                 TextWidget(
-                  text: 'Zuc Ram Jr.',
+                  text: 'John Doe',
                   fontFamily: 'Bold',
                   fontSize: 16,
                 ),
-                Builder(builder: (context) {
-                  return IconButton(
-                    onPressed: () {
-                      Scaffold.of(context).closeDrawer();
-                    },
-                    icon: Icon(
-                      Icons.menu,
-                      color: primary,
-                      size: 32,
-                    ),
-                  );
-                }),
               ],
             ),
             const SizedBox(
@@ -63,14 +57,18 @@ class DrawerWidget extends StatelessWidget {
                 //     builder: (context) => const HomeScreen()));
               },
               title: TextWidget(
-                text: 'Help',
+                text: 'Map',
                 fontSize: 14,
                 fontFamily: 'Bold',
               ),
             ),
             ListTile(
+              onTap: () {
+                // Navigator.of(context).pushReplacement(MaterialPageRoute(
+                //     builder: (context) => const HomeScreen()));
+              },
               title: TextWidget(
-                text: 'About iParkPatrol',
+                text: 'Navigation',
                 fontSize: 14,
                 fontFamily: 'Bold',
               ),
