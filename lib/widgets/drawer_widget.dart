@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:grave_finder/widgets/text_widget.dart';
 
+import '../screens/home_screen.dart';
 import '../utlis/colors.dart';
 
 class DrawerWidget extends StatelessWidget {
@@ -53,8 +54,8 @@ class DrawerWidget extends StatelessWidget {
             ),
             ListTile(
               onTap: () {
-                // Navigator.of(context).pushReplacement(MaterialPageRoute(
-                //     builder: (context) => const HomeScreen()));
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
+                    builder: (context) => const HomeScreen()));
               },
               title: TextWidget(
                 text: 'Map',
