@@ -41,6 +41,7 @@ dependencies:
   firebase_auth:
   fluttertoast:
   get_storage:
+  flutter_svg:
 
 dev_dependencies:
   flutter_test:
