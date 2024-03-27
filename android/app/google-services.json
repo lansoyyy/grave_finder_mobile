@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "978542438410",
+    "project_id": "gravefinder-9d85f",
+    "storage_bucket": "gravefinder-9d85f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:978542438410:android:3c1fcca677a6b9c08f97f3",
+        "android_client_info": {
+          "package_name": "com.example.grave_finder"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyALBovovWA3wdK7BTeKqhpDlBEJMAwQrh0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
