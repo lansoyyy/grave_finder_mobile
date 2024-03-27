@@ -120,13 +120,14 @@ class _SignupPageState extends State<SignupPage> {
 
   register(context) async {
     try {
-      FirebaseAuth.instance.createUserWithEmailAndPassword(
+      final user = await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: email.text, password: password.text);
 
       // signup(nameController.text, numberController.text, addressController.text,
       //     emailController.text);
 
-      signup(firstname.text, lastname.text, email.text, username.text);
+      signup(firstname.text, lastname.text, email.text, username.text,
+          user.user!.uid);
 
       showToast("Registered Successfully!");
 
