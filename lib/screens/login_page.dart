@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:grave_finder/screens/home_screen.dart';
 import 'package:grave_finder/screens/signup_page.dart';
@@ -5,6 +6,7 @@ import 'package:grave_finder/utlis/colors.dart';
 import 'package:grave_finder/widgets/button_widget.dart';
 import 'package:grave_finder/widgets/text_widget.dart';
 import 'package:grave_finder/widgets/textfield_widget.dart';
+import 'package:grave_finder/widgets/toast_widget.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -37,7 +39,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             TextFieldWidget(
               controller: username,
-              label: 'Username',
+              label: 'Email',
             ),
             const SizedBox(
               height: 20,
@@ -53,8 +55,7 @@ class _LoginPageState extends State<LoginPage> {
             ButtonWidget(
               label: 'Sign In',
               onPressed: () {
-                Navigator.of(context).pushReplacement(MaterialPageRoute(
-                    builder: (context) => const HomeScreen()));
+                login(context);
               },
             ),
             const SizedBox(
@@ -76,5 +77,29 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
+  }
+
+  login(context) async {
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: username.text, password: password.text);
+      showToast('Logged in succesfully!');
+      Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const HomeScreen()));
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        showToast("No user found with that email.");
+      } else if (e.code == 'wrong-password') {
+        showToast("Wrong password provided for that user.");
+      } else if (e.code == 'invalid-email') {
+        showToast("Invalid email provided.");
+      } else if (e.code == 'user-disabled') {
+        showToast("User account has been disabled.");
+      } else {
+        showToast("An error occurred: ${e.message}");
+      }
+    } on Exception catch (e) {
+      showToast("An error occurred: $e");
+    }
   }
 }

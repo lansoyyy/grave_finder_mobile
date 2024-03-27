@@ -1,9 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:grave_finder/screens/login_page.dart';
+import 'package:grave_finder/services/signup.dart';
 import 'package:grave_finder/utlis/colors.dart';
 import 'package:grave_finder/widgets/button_widget.dart';
 import 'package:grave_finder/widgets/text_widget.dart';
 import 'package:grave_finder/widgets/textfield_widget.dart';
+import 'package:grave_finder/widgets/toast_widget.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -69,6 +72,7 @@ class _SignupPageState extends State<SignupPage> {
                 height: 20,
               ),
               TextFieldWidget(
+                showEye: true,
                 isObscure: true,
                 controller: password,
                 label: 'Password',
@@ -77,6 +81,7 @@ class _SignupPageState extends State<SignupPage> {
                 height: 30,
               ),
               TextFieldWidget(
+                showEye: true,
                 isObscure: true,
                 controller: confirmpassword,
                 label: 'Confirm Password',
@@ -87,8 +92,11 @@ class _SignupPageState extends State<SignupPage> {
               ButtonWidget(
                 label: 'Sign Up',
                 onPressed: () {
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (context) => const LoginPage()));
+                  if (password.text != confirmpassword.text) {
+                    showToast('Password do not match!');
+                  } else {
+                    register(context);
+                  }
                 },
               ),
               const SizedBox(
@@ -108,5 +116,34 @@ class _SignupPageState extends State<SignupPage> {
         ),
       ),
     );
+  }
+
+  register(context) async {
+    try {
+      FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: email.text, password: password.text);
+
+      // signup(nameController.text, numberController.text, addressController.text,
+      //     emailController.text);
+
+      signup(firstname.text, lastname.text, email.text, username.text);
+
+      showToast("Registered Successfully!");
+
+      Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const LoginPage()));
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        showToast('The password provided is too weak.');
+      } else if (e.code == 'email-already-in-use') {
+        showToast('The account already exists for that email.');
+      } else if (e.code == 'invalid-email') {
+        showToast('The email address is not valid.');
+      } else {
+        showToast(e.toString());
+      }
+    } on Exception catch (e) {
+      showToast("An error occurred: $e");
+    }
   }
 }
