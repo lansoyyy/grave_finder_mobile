@@ -22,6 +22,8 @@ class _SignupPageState extends State<SignupPage> {
   final firstname = TextEditingController();
   final lastname = TextEditingController();
   final email = TextEditingController();
+
+  bool value = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -87,18 +89,41 @@ class _SignupPageState extends State<SignupPage> {
                 label: 'Confirm Password',
               ),
               const SizedBox(
-                height: 30,
+                height: 10,
               ),
-              ButtonWidget(
-                label: 'Sign Up',
-                onPressed: () {
-                  if (password.text != confirmpassword.text) {
-                    showToast('Password do not match!');
-                  } else {
-                    register(context);
-                  }
-                },
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Checkbox(
+                    value: value,
+                    onChanged: (newValue) {
+                      setState(() {
+                        value = newValue!;
+                      });
+                    },
+                  ),
+                  TextWidget(
+                    text: 'I agree to terms and conditions',
+                    fontSize: 12,
+                  ),
+                ],
               ),
+              const SizedBox(
+                height: 10,
+              ),
+              value
+                  ? ButtonWidget(
+                      label: 'Sign Up',
+                      onPressed: () {
+                        if (password.text != confirmpassword.text) {
+                          showToast('Password do not match!');
+                        } else {
+                          register(context);
+                        }
+                      },
+                    )
+                  : const SizedBox(),
               const SizedBox(
                 height: 20,
               ),
@@ -129,7 +154,12 @@ class _SignupPageState extends State<SignupPage> {
       signup(firstname.text, lastname.text, email.text, username.text,
           user.user!.uid);
 
-      showToast("Registered Successfully!");
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: username.text, password: password.text);
+
+      await FirebaseAuth.instance.currentUser!.sendEmailVerification();
+
+      showToast("Registered Successfully! Verification was sent to your email");
 
       Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const LoginPage()));
