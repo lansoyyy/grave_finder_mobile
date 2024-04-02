@@ -155,7 +155,7 @@ class _SignupPageState extends State<SignupPage> {
           user.user!.uid);
 
       await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: username.text, password: password.text);
+          email: email.text, password: password.text);
 
       await FirebaseAuth.instance.currentUser!.sendEmailVerification();
 
