@@ -5,7 +5,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:grave_finder/screens/reservation_page.dart';
 import 'package:grave_finder/widgets/drawer_widget.dart';
+import 'package:grave_finder/widgets/toast_widget.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:latlong2/latlong.dart';
 import '../widgets/text_widget.dart';
@@ -36,14 +38,14 @@ class _HomeScreenState extends State<HomeScreen> {
           } else if (snapshot.connectionState == ConnectionState.waiting) {
             return const SizedBox();
           }
-          dynamic data = snapshot.data;
+          dynamic userdata = snapshot.data;
           return Scaffold(
               drawer: const DrawerWidget(),
               appBar: AppBar(
                 backgroundColor: Colors.white,
                 foregroundColor: Colors.black,
                 title: TextWidget(
-                  text: '${'Welcome, ' + data['fname']} ',
+                  text: '${'Welcome, ' + userdata['fname']} ',
                   fontSize: 18,
                   fontFamily: 'Bold',
                 ),
@@ -112,7 +114,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                 if (isPointInsidePolygon(points, polygon)) {
                                   // Show the index of the clicked polygon
                                   print('Clicked on polygon at index $i');
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) => ReservationPage(
+                                            username: userdata['fname'],
+                                            lotid: data.docs[i]['lot_no']
+                                                .toString(),
+                                          )));
                                   break; // Stop checking other polygons
+                                } else {
+                                  showToast('Slot not available!');
                                 }
                               }
                             },

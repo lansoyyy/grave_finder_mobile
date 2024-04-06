@@ -44,6 +44,7 @@ dependencies:
   flutter_svg:
   photo_view:
   flutter_map:
+  intl:
 
 
 dev_dependencies:
