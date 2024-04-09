@@ -45,6 +45,8 @@ dependencies:
   photo_view:
   flutter_map:
   intl:
+  flutter_polyline_points: ^1.0.0
+  geolocator:
 
 
 dev_dependencies:
