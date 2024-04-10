@@ -16,14 +16,14 @@ import 'package:photo_view/photo_view.dart';
 import 'package:latlong2/latlong.dart';
 import '../widgets/text_widget.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class RouteScreen extends StatefulWidget {
+  const RouteScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<RouteScreen> createState() => _RouteScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _RouteScreenState extends State<RouteScreen> {
   bool hasLoaded = false;
   double lat = 0;
   double lng = 0;
@@ -42,24 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
   getLocation() async {
     await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
         .then((position) async {
-      PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-        kGoogleApiKey,
-        PointLatLng(position.latitude, position.longitude),
-        const PointLatLng(14.110409591799119, 121.55022553270486),
-      );
-      if (result.points.isNotEmpty) {
-        polylineCoordinates = result.points
-            .map((point) => LatLng(point.latitude, point.longitude))
-            .toList();
-      }
-
       setState(() {
-        poly = Polyline(
-          isDotted: true,
-          strokeWidth: 5,
-          points: polylineCoordinates,
-          color: Colors.red,
-        );
         lat = position.latitude;
         lng = position.longitude;
         hasLoaded = true;
@@ -98,10 +81,11 @@ class _HomeScreenState extends State<HomeScreen> {
               backgroundColor: Colors.white,
               foregroundColor: Colors.black,
               title: TextWidget(
-                text: '${'Welcome, ' + userdata['fname']} ',
+                text: 'Navigation',
                 fontSize: 18,
                 fontFamily: 'Bold',
               ),
+              centerTitle: true,
             ),
             body: hasLoaded
                 ? StreamBuilder<QuerySnapshot>(
@@ -130,7 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           FlutterMap(
                             options: MapOptions(
-                              onTap: (tapPosition, points) {
+                              onTap: (tapPosition, points) async {
                                 for (int i = 0; i < data.docs.length; i++) {
                                   final polygon = [
                                     LatLng(
@@ -166,29 +150,101 @@ class _HomeScreenState extends State<HomeScreen> {
 
                                   // Check if the tap position is within the polygon
                                   if (isPointInsidePolygon(points, polygon)) {
-                                    // Show the index of the clicked polygon
-                                    print('Clicked on polygon at index $i');
-                                    if (data.docs[i]['Status'] != 'Reserved') {
-                                      if (data.docs[i]['Status'] ==
-                                          'Available') {
-                                        Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    ReservationPage(
-                                                      id: data.docs[i].id,
-                                                      username:
-                                                          userdata['fname'],
-                                                      lotid: data.docs[i]
-                                                              ['lot_no']
-                                                          .toString(),
-                                                    )));
-                                      } else {
-                                        showToast('Slot not available!');
-                                      }
-                                    } else {
-                                      showToast('Slot is reserved!');
-                                    }
-                                    break; // Stop checking other polygons
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return AlertDialog(
+                                          title: TextWidget(
+                                            text:
+                                                'Are you sure you want to go this grave?',
+                                            fontSize: 18,
+                                            fontFamily: 'Bold',
+                                          ),
+                                          content: data.docs[i]['Status'] ==
+                                                      'Available' ||
+                                                  data.docs[i]['Status'] ==
+                                                      'Reserved'
+                                              ? const SizedBox()
+                                              : Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    TextWidget(
+                                                      text:
+                                                          'Name: ${data.docs[i]['Name']}',
+                                                      fontSize: 18,
+                                                    ),
+                                                    TextWidget(
+                                                      text:
+                                                          'Born: ${data.docs[i]['Born']}',
+                                                      fontSize: 16,
+                                                    ),
+                                                    TextWidget(
+                                                      text:
+                                                          'Died: ${data.docs[i]['Died']}',
+                                                      fontSize: 16,
+                                                    ),
+                                                  ],
+                                                ),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                              child: TextWidget(
+                                                text: 'No',
+                                                fontSize: 14,
+                                              ),
+                                            ),
+                                            TextButton(
+                                              onPressed: () async {
+                                                PolylineResult result =
+                                                    await polylinePoints
+                                                        .getRouteBetweenCoordinates(
+                                                  kGoogleApiKey,
+                                                  PointLatLng(lat, lng),
+                                                  PointLatLng(
+                                                      double.parse(data.docs[i]
+                                                              ['lat_long1']
+                                                          .toString()
+                                                          .split(', ')[0]),
+                                                      double.parse(data.docs[i]
+                                                              ['lat_long1']
+                                                          .toString()
+                                                          .split(', ')[1])),
+                                                );
+                                                if (result.points.isNotEmpty) {
+                                                  polylineCoordinates = result
+                                                      .points
+                                                      .map((point) => LatLng(
+                                                          point.latitude,
+                                                          point.longitude))
+                                                      .toList();
+                                                }
+
+                                                setState(() {
+                                                  poly = Polyline(
+                                                    isDotted: true,
+                                                    strokeWidth: 5,
+                                                    points: polylineCoordinates,
+                                                    color: Colors.red,
+                                                  );
+                                                });
+                                                Navigator.pop(context);
+                                              },
+                                              child: TextWidget(
+                                                text: 'Yes',
+                                                fontSize: 14,
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+
+                                    break;
                                   }
                                 }
                               },
@@ -268,142 +324,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 .split(', ')[1]))
                                       ])
                               ]),
-                              // PolylineLayer(
-                              //   polylines: [poly],
-                              // ),
+                              PolylineLayer(
+                                polylines: [poly],
+                              ),
                             ],
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 20),
-                            child: Column(
-                              children: [
-                                // Align(
-                                //   alignment: Alignment.topCenter,
-                                //   child: Container(
-                                //     height: 40,
-                                //     width: 350,
-                                //     decoration: BoxDecoration(
-                                //         border: Border.all(
-                                //           color: Colors.white,
-                                //         ),
-                                //         borderRadius: BorderRadius.circular(100)),
-                                //     child: Padding(
-                                //       padding: const EdgeInsets.only(
-                                //           left: 10, right: 10),
-                                //       child: TextFormField(
-                                //         style: const TextStyle(
-                                //             color: Colors.white,
-                                //             fontFamily: 'Regular',
-                                //             fontSize: 14),
-                                //         onChanged: (value) {
-                                //           setState(() {
-                                //             nameSearched = value;
-                                //           });
-                                //         },
-                                //         decoration: const InputDecoration(
-                                //             labelStyle: TextStyle(
-                                //               color: Colors.white,
-                                //             ),
-                                //             hintText: 'Search',
-                                //             hintStyle: TextStyle(
-                                //               fontFamily: 'QRegular',
-                                //               color: Colors.white,
-                                //             ),
-                                //             prefixIcon: Icon(
-                                //               Icons.search,
-                                //               color: Colors.white,
-                                //             )),
-                                //         controller: searchController,
-                                //       ),
-                                //     ),
-                                //   ),
-                                // ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                TextWidget(
-                                  text: 'Legend',
-                                  fontSize: 18,
-                                  fontFamily: 'Bold',
-                                  color: Colors.black,
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          height: 50,
-                                          width: 75,
-                                          color: Colors.green,
-                                        ),
-                                        const SizedBox(
-                                          height: 5,
-                                        ),
-                                        TextWidget(
-                                          text: 'Available',
-                                          fontSize: 12,
-                                          fontFamily: 'Bold',
-                                          color: Colors.black,
-                                        ),
-                                      ],
-                                    ),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          height: 50,
-                                          width: 75,
-                                          color: Colors.yellow,
-                                        ),
-                                        const SizedBox(
-                                          height: 5,
-                                        ),
-                                        TextWidget(
-                                          text: 'Pre-Reserved',
-                                          fontSize: 12,
-                                          fontFamily: 'Bold',
-                                          color: Colors.black,
-                                        ),
-                                      ],
-                                    ),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          height: 50,
-                                          width: 75,
-                                          color: Colors.red,
-                                        ),
-                                        const SizedBox(
-                                          height: 5,
-                                        ),
-                                        TextWidget(
-                                          text: 'Occupied',
-                                          fontSize: 12,
-                                          fontFamily: 'Bold',
-                                          color: Colors.black,
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
                           ),
                         ],
                       );
@@ -416,7 +340,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   bool isPointInsidePolygon(LatLng tapPosition, List<LatLng> polygon) {
-    bool isInside = false;
     double minX = polygon[0].latitude;
     double maxX = polygon[0].latitude;
     double minY = polygon[0].longitude;

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:grave_finder/screens/login_page.dart';
+import 'package:grave_finder/screens/route_page.dart';
 import 'package:grave_finder/widgets/text_widget.dart';
 
 import '../screens/home_screen.dart';
@@ -83,8 +84,8 @@ class DrawerWidget extends StatelessWidget {
                   ),
                   ListTile(
                     onTap: () {
-                      // Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      //     builder: (context) => const HomeScreen()));
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          builder: (context) => const RouteScreen()));
                     },
                     title: TextWidget(
                       text: 'Navigation',
