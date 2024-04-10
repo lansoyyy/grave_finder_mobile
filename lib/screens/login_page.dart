@@ -1,5 +1,9 @@
+import 'dart:convert';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:grave_finder/screens/home_screen.dart';
 import 'package:grave_finder/screens/signup_page.dart';
 import 'package:grave_finder/utlis/colors.dart';
@@ -163,7 +167,20 @@ class _LoginPageState extends State<LoginPage> {
             ),
             ButtonWidget(
               label: 'Sign In',
-              onPressed: () {
+              onPressed: () async {
+                // // Load the JSON file from assets
+                // String jsonString =
+                //     await rootBundle.loadString('assets/records.json');
+
+                // // Parse the JSON string into a list of maps
+                // List<dynamic> jsonData = jsonDecode(jsonString);
+
+                // // Upload each map to Firestore
+                // for (var data in jsonData) {
+                //   await FirebaseFirestore.instance
+                //       .collection('Slots')
+                //       .add(data);
+                // }
                 login(context);
               },
             ),

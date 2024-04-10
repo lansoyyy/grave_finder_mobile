@@ -168,17 +168,27 @@ class _HomeScreenState extends State<HomeScreen> {
                                   if (isPointInsidePolygon(points, polygon)) {
                                     // Show the index of the clicked polygon
                                     print('Clicked on polygon at index $i');
-                                    Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                ReservationPage(
-                                                  username: userdata['fname'],
-                                                  lotid: data.docs[i]['lot_no']
-                                                      .toString(),
-                                                )));
+                                    if (data.docs[i]['Status'] != 'Reserved') {
+                                      if (data.docs[i]['Status'] ==
+                                          'Available') {
+                                        Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    ReservationPage(
+                                                      id: data.docs[i].id,
+                                                      username:
+                                                          userdata['fname'],
+                                                      lotid: data.docs[i]
+                                                              ['lot_no']
+                                                          .toString(),
+                                                    )));
+                                      } else {
+                                        showToast('Slot not available!');
+                                      }
+                                    } else {
+                                      showToast('Slot is reserved!');
+                                    }
                                     break; // Stop checking other polygons
-                                  } else {
-                                    showToast('Slot not available!');
                                   }
                                 }
                               },
@@ -197,9 +207,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                 for (int i = 0; i < data.docs.length; i++)
                                   Polygon(
                                       isFilled: true,
-                                      color: data.docs[i]['Name'] == 'Available'
+                                      color: data.docs[i]['Status'] ==
+                                              'Available'
                                           ? Colors.green
-                                          : Colors.red,
+                                          : data.docs[i]['Status'] == 'Reserved'
+                                              ? Colors.amber
+                                              : Colors.red,
                                       points: [
                                         LatLng(
                                             double.parse(data.docs[i]
@@ -239,9 +252,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 .split(', ')[1]))
                                       ])
                               ]),
-                              PolylineLayer(
-                                polylines: [poly],
-                              ),
+                              // PolylineLayer(
+                              //   polylines: [poly],
+                              // ),
                             ],
                           ),
                           Padding(

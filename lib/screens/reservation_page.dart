@@ -1,22 +1,35 @@
+import 'dart:math';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:grave_finder/utlis/colors.dart';
 import 'package:grave_finder/widgets/button_widget.dart';
 import 'package:grave_finder/widgets/text_widget.dart';
 import 'package:grave_finder/widgets/textfield_widget.dart';
+import 'package:grave_finder/widgets/toast_widget.dart';
 import 'package:intl/intl.dart';
+
+Random random = Random();
+int min = 100000; // 6-digit number range start
+int max = 999999; // 6-digit number range end
 
 class ReservationPage extends StatefulWidget {
   String username;
   String lotid;
 
-  ReservationPage({super.key, required this.username, required this.lotid});
+  String id;
+
+  ReservationPage(
+      {super.key,
+      required this.username,
+      required this.lotid,
+      required this.id});
 
   @override
   State<ReservationPage> createState() => _ReservationPageState();
 }
 
 class _ReservationPageState extends State<ReservationPage> {
-  final transactiono = TextEditingController();
   final lname = TextEditingController();
   final fname = TextEditingController();
 
@@ -25,6 +38,10 @@ class _ReservationPageState extends State<ReservationPage> {
       DateTime.now(),
     ),
   );
+
+  final transactiono =
+      TextEditingController(text: (min + random.nextInt(max - min)).toString());
+
   @override
   Widget build(BuildContext context) {
     final lotid = TextEditingController(text: widget.lotid);
@@ -188,8 +205,17 @@ class _ReservationPageState extends State<ReservationPage> {
                 ),
                 ButtonWidget(
                   label: 'Submit',
-                  onPressed: () {
-                    Navigator.pop(context);
+                  onPressed: () async {
+                    await FirebaseFirestore.instance
+                        .collection('Slots')
+                        .doc(widget.id)
+                        .update({
+                      'Name': '${fname.text} ${lname.text}',
+                      'Status': 'Reserved',
+                    }).whenComplete(() {
+                      showToast('Reversation was succesfully sent!');
+                      Navigator.pop(context);
+                    });
                   },
                 ),
               ],
