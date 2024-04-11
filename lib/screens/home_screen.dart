@@ -130,72 +130,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           FlutterMap(
                             options: MapOptions(
-                              onTap: (tapPosition, points) {
-                                for (int i = 0; i < data.docs.length; i++) {
-                                  final polygon = [
-                                    LatLng(
-                                        double.parse(data.docs[i]['lat_long1']
-                                            .toString()
-                                            .split(', ')[0]),
-                                        double.parse(data.docs[i]['lat_long1']
-                                            .toString()
-                                            .split(', ')[1])),
-                                    LatLng(
-                                        double.parse(data.docs[i]['lat_long2']
-                                            .toString()
-                                            .split(', ')[0]),
-                                        double.parse(data.docs[i]['lat_long2']
-                                            .toString()
-                                            .split(', ')[1])),
-                                    LatLng(
-                                        double.parse(data.docs[i]['lat_long3']
-                                            .toString()
-                                            .split(', ')[0]),
-                                        double.parse(data.docs[i]['lat_long3']
-                                            .toString()
-                                            .split(', ')[1])),
-                                    LatLng(
-                                        double.parse(data.docs[i]['lat_long4']
-                                            .toString()
-                                            .split(', ')[0]),
-                                        double.parse(data.docs[i]['lat_long4']
-                                            .toString()
-                                            .split(', ')[1]))
-                                    // Add other points of the polygon similarly
-                                  ];
-
-                                  // Check if the tap position is within the polygon
-                                  if (isPointInsidePolygon(points, polygon)) {
-                                    // Show the index of the clicked polygon
-                                    print('Clicked on polygon at index $i');
-                                    if (data.docs[i]['Status'] != 'Reserved') {
-                                      if (data.docs[i]['Status'] ==
-                                          'Available') {
-                                        Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    ReservationPage(
-                                                      id: data.docs[i].id,
-                                                      username:
-                                                          userdata['fname'],
-                                                      lotid: data.docs[i]
-                                                              ['lot_no']
-                                                          .toString(),
-                                                    )));
-                                      } else {
-                                        showToast('Slot not available!');
-                                      }
-                                    } else {
-                                      showToast('Slot is reserved!');
-                                    }
-                                    break; // Stop checking other polygons
-                                  }
-                                }
-                              },
                               zoom: 18,
                               center: LatLng(14.110739, 121.550554),
                               minZoom: 1,
-                              maxZoom: 100,
+                              maxZoom: 18,
                             ),
                             children: [
                               TileLayer(
@@ -203,74 +141,72 @@ class _HomeScreenState extends State<HomeScreen> {
                                     'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                                 userAgentPackageName: 'com.example.app',
                               ),
-                              // MarkerLayer(
-                              //   markers: [
-                              //      for (int i = 0; i < data.docs.length; i++)
-                              //      Marker(point:  LatLng(
-                              //               double.parse(data.docs[i]
-                              //                       ['lat_long1']
-                              //                   .toString()
-                              //                   .split(', ')[0]),
-                              //               double.parse(data.docs[i]
-                              //                       ['lat_long1']
-                              //                   .toString()
-                              //                   .split(', ')[1])), builder: (context) {
-                              //                     return Container();
-                              //                   },)
-                              //   ],
-                              // ),
-                              PolygonLayer(polygons: [
-                                for (int i = 0; i < data.docs.length; i++)
-                                  Polygon(
-                                      isFilled: true,
-                                      color: data.docs[i]['Status'] ==
-                                              'Available'
-                                          ? Colors.green
-                                          : data.docs[i]['Status'] == 'Reserved'
-                                              ? Colors.amber
-                                              : Colors.red,
-                                      points: [
-                                        LatLng(
-                                            double.parse(data.docs[i]
-                                                    ['lat_long1']
-                                                .toString()
-                                                .split(', ')[0]),
-                                            double.parse(data.docs[i]
-                                                    ['lat_long1']
-                                                .toString()
-                                                .split(', ')[1])),
-                                        LatLng(
-                                            double.parse(data.docs[i]
-                                                    ['lat_long2']
-                                                .toString()
-                                                .split(', ')[0]),
-                                            double.parse(data.docs[i]
-                                                    ['lat_long2']
-                                                .toString()
-                                                .split(', ')[1])),
-                                        LatLng(
-                                            double.parse(data.docs[i]
-                                                    ['lat_long3']
-                                                .toString()
-                                                .split(', ')[0]),
-                                            double.parse(data.docs[i]
-                                                    ['lat_long3']
-                                                .toString()
-                                                .split(', ')[1])),
-                                        LatLng(
-                                            double.parse(data.docs[i]
-                                                    ['lat_long4']
-                                                .toString()
-                                                .split(', ')[0]),
-                                            double.parse(data.docs[i]
-                                                    ['lat_long4']
-                                                .toString()
-                                                .split(', ')[1]))
-                                      ])
-                              ]),
-                              // PolylineLayer(
-                              //   polylines: [poly],
-                              // ),
+                              MarkerLayer(
+                                markers: [
+                                  for (int i = 0; i < data.docs.length; i++)
+                                    Marker(
+                                      height: 8,
+                                      width: 8,
+                                      point: LatLng(
+                                          double.parse(data.docs[i]['lat_long1']
+                                              .toString()
+                                              .split(', ')[0]),
+                                          double.parse(data.docs[i]['lat_long1']
+                                              .toString()
+                                              .split(', ')[1])),
+                                      builder: (context) {
+                                        return Transform.rotate(
+                                          angle: 147 * 3.1415926535897932 / 190,
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              if (data.docs[i]['Status'] !=
+                                                  'Reserved') {
+                                                if (data.docs[i]['Status'] ==
+                                                    'Available') {
+                                                  Navigator.of(context).push(
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              ReservationPage(
+                                                                id: data
+                                                                    .docs[i].id,
+                                                                username:
+                                                                    userdata[
+                                                                        'fname'],
+                                                                lotid: data
+                                                                    .docs[i][
+                                                                        'lot_no']
+                                                                    .toString(),
+                                                              )));
+                                                } else {
+                                                  showToast(
+                                                      'Slot not available!');
+                                                }
+                                              } else {
+                                                showToast('Slot is reserved!');
+                                              }
+                                            },
+                                            child: Container(
+                                              width: 5,
+                                              height: 5,
+                                              decoration: BoxDecoration(
+                                                color: data.docs[i]['Status'] ==
+                                                        'Available'
+                                                    ? Colors.green
+                                                    : data.docs[i]['Status'] ==
+                                                            'Reserved'
+                                                        ? Colors.amber
+                                                        : Colors.red,
+                                                border: Border.all(
+                                                    color: Colors.black,
+                                                    width: 0.5),
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    )
+                                ],
+                              ),
                             ],
                           ),
                           Padding(
@@ -387,7 +323,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                         Container(
                                           height: 50,
                                           width: 75,
-                                          color: Colors.red,
+                                          decoration: const BoxDecoration(
+                                            color: Colors.red,
+                                          ),
                                         ),
                                         const SizedBox(
                                           height: 5,
