@@ -114,140 +114,6 @@ class _RouteScreenState extends State<RouteScreen> {
                         children: [
                           FlutterMap(
                             options: MapOptions(
-                              onTap: (tapPosition, points) async {
-                                for (int i = 0; i < data.docs.length; i++) {
-                                  final polygon = [
-                                    LatLng(
-                                        double.parse(data.docs[i]['lat_long1']
-                                            .toString()
-                                            .split(', ')[0]),
-                                        double.parse(data.docs[i]['lat_long1']
-                                            .toString()
-                                            .split(', ')[1])),
-                                    LatLng(
-                                        double.parse(data.docs[i]['lat_long2']
-                                            .toString()
-                                            .split(', ')[0]),
-                                        double.parse(data.docs[i]['lat_long2']
-                                            .toString()
-                                            .split(', ')[1])),
-                                    LatLng(
-                                        double.parse(data.docs[i]['lat_long3']
-                                            .toString()
-                                            .split(', ')[0]),
-                                        double.parse(data.docs[i]['lat_long3']
-                                            .toString()
-                                            .split(', ')[1])),
-                                    LatLng(
-                                        double.parse(data.docs[i]['lat_long4']
-                                            .toString()
-                                            .split(', ')[0]),
-                                        double.parse(data.docs[i]['lat_long4']
-                                            .toString()
-                                            .split(', ')[1]))
-                                    // Add other points of the polygon similarly
-                                  ];
-
-                                  // Check if the tap position is within the polygon
-                                  if (isPointInsidePolygon(points, polygon)) {
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return AlertDialog(
-                                          title: TextWidget(
-                                            text:
-                                                'Are you sure you want to go this grave?',
-                                            fontSize: 18,
-                                            fontFamily: 'Bold',
-                                          ),
-                                          content: data.docs[i]['Status'] ==
-                                                      'Available' ||
-                                                  data.docs[i]['Status'] ==
-                                                      'Reserved'
-                                              ? const SizedBox()
-                                              : Column(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    TextWidget(
-                                                      text:
-                                                          'Name: ${data.docs[i]['Name']}',
-                                                      fontSize: 18,
-                                                    ),
-                                                    TextWidget(
-                                                      text:
-                                                          'Born: ${data.docs[i]['Born']}',
-                                                      fontSize: 16,
-                                                    ),
-                                                    TextWidget(
-                                                      text:
-                                                          'Died: ${data.docs[i]['Died']}',
-                                                      fontSize: 16,
-                                                    ),
-                                                  ],
-                                                ),
-                                          actions: [
-                                            TextButton(
-                                              onPressed: () {
-                                                Navigator.pop(context);
-                                              },
-                                              child: TextWidget(
-                                                text: 'No',
-                                                fontSize: 14,
-                                              ),
-                                            ),
-                                            TextButton(
-                                              onPressed: () async {
-                                                PolylineResult result =
-                                                    await polylinePoints
-                                                        .getRouteBetweenCoordinates(
-                                                  kGoogleApiKey,
-                                                  PointLatLng(lat, lng),
-                                                  PointLatLng(
-                                                      double.parse(data.docs[i]
-                                                              ['lat_long1']
-                                                          .toString()
-                                                          .split(', ')[0]),
-                                                      double.parse(data.docs[i]
-                                                              ['lat_long1']
-                                                          .toString()
-                                                          .split(', ')[1])),
-                                                );
-                                                if (result.points.isNotEmpty) {
-                                                  polylineCoordinates = result
-                                                      .points
-                                                      .map((point) => LatLng(
-                                                          point.latitude,
-                                                          point.longitude))
-                                                      .toList();
-                                                }
-
-                                                setState(() {
-                                                  poly = Polyline(
-                                                    isDotted: true,
-                                                    strokeWidth: 5,
-                                                    points: polylineCoordinates,
-                                                    color: Colors.red,
-                                                  );
-                                                });
-                                                Navigator.pop(context);
-                                              },
-                                              child: TextWidget(
-                                                text: 'Yes',
-                                                fontSize: 14,
-                                              ),
-                                            ),
-                                          ],
-                                        );
-                                      },
-                                    );
-
-                                    break;
-                                  }
-                                }
-                              },
                               zoom: 18,
                               center: LatLng(14.110739, 121.550554),
                               minZoom: 1,
@@ -259,73 +125,160 @@ class _RouteScreenState extends State<RouteScreen> {
                                     'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                                 userAgentPackageName: 'com.example.app',
                               ),
-                              // MarkerLayer(
-                              //   markers: [
-                              //      for (int i = 0; i < data.docs.length; i++)
-                              //      Marker(point:  LatLng(
-                              //               double.parse(data.docs[i]
-                              //                       ['lat_long1']
-                              //                   .toString()
-                              //                   .split(', ')[0]),
-                              //               double.parse(data.docs[i]
-                              //                       ['lat_long1']
-                              //                   .toString()
-                              //                   .split(', ')[1])), builder: (context) {
-                              //                     return Container();
-                              //                   },)
-                              //   ],
-                              // ),
-                              PolygonLayer(polygons: [
-                                for (int i = 0; i < data.docs.length; i++)
-                                  Polygon(
-                                      isFilled: true,
-                                      color: data.docs[i]['Status'] ==
-                                              'Available'
-                                          ? Colors.green
-                                          : data.docs[i]['Status'] == 'Reserved'
-                                              ? Colors.amber
-                                              : Colors.red,
-                                      points: [
-                                        LatLng(
-                                            double.parse(data.docs[i]
-                                                    ['lat_long1']
-                                                .toString()
-                                                .split(', ')[0]),
-                                            double.parse(data.docs[i]
-                                                    ['lat_long1']
-                                                .toString()
-                                                .split(', ')[1])),
-                                        LatLng(
-                                            double.parse(data.docs[i]
-                                                    ['lat_long2']
-                                                .toString()
-                                                .split(', ')[0]),
-                                            double.parse(data.docs[i]
-                                                    ['lat_long2']
-                                                .toString()
-                                                .split(', ')[1])),
-                                        LatLng(
-                                            double.parse(data.docs[i]
-                                                    ['lat_long3']
-                                                .toString()
-                                                .split(', ')[0]),
-                                            double.parse(data.docs[i]
-                                                    ['lat_long3']
-                                                .toString()
-                                                .split(', ')[1])),
-                                        LatLng(
-                                            double.parse(data.docs[i]
-                                                    ['lat_long4']
-                                                .toString()
-                                                .split(', ')[0]),
-                                            double.parse(data.docs[i]
-                                                    ['lat_long4']
-                                                .toString()
-                                                .split(', ')[1]))
-                                      ])
-                              ]),
                               PolylineLayer(
                                 polylines: [poly],
+                              ),
+                              MarkerLayer(
+                                markers: [
+                                  for (int i = 0; i < data.docs.length; i++)
+                                    Marker(
+                                      height: 8,
+                                      width: 8,
+                                      point: LatLng(
+                                          double.parse(data.docs[i]['lat_long1']
+                                              .toString()
+                                              .split(', ')[0]),
+                                          double.parse(data.docs[i]['lat_long1']
+                                              .toString()
+                                              .split(', ')[1])),
+                                      builder: (context) {
+                                        return Transform.rotate(
+                                          angle: 147 * 3.1415926535897932 / 190,
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) {
+                                                  return AlertDialog(
+                                                    title: TextWidget(
+                                                      text:
+                                                          'Are you sure you want to go this grave?',
+                                                      fontSize: 18,
+                                                      fontFamily: 'Bold',
+                                                    ),
+                                                    content: data.docs[i][
+                                                                    'Status'] ==
+                                                                'Available' ||
+                                                            data.docs[i][
+                                                                    'Status'] ==
+                                                                'Reserved'
+                                                        ? const SizedBox()
+                                                        : Column(
+                                                            mainAxisSize:
+                                                                MainAxisSize
+                                                                    .min,
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              TextWidget(
+                                                                text:
+                                                                    'Name: ${data.docs[i]['Name']}',
+                                                                fontSize: 18,
+                                                              ),
+                                                              TextWidget(
+                                                                text:
+                                                                    'Born: ${data.docs[i]['Born']}',
+                                                                fontSize: 16,
+                                                              ),
+                                                              TextWidget(
+                                                                text:
+                                                                    'Died: ${data.docs[i]['Died']}',
+                                                                fontSize: 16,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                    actions: [
+                                                      TextButton(
+                                                        onPressed: () {
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
+                                                        child: TextWidget(
+                                                          text: 'No',
+                                                          fontSize: 14,
+                                                        ),
+                                                      ),
+                                                      TextButton(
+                                                        onPressed: () async {
+                                                          PolylineResult
+                                                              result =
+                                                              await polylinePoints
+                                                                  .getRouteBetweenCoordinates(
+                                                            kGoogleApiKey,
+                                                            PointLatLng(
+                                                                lat, lng),
+                                                            PointLatLng(
+                                                                double.parse(data
+                                                                        .docs[i]
+                                                                            [
+                                                                            'lat_long1']
+                                                                        .toString()
+                                                                        .split(
+                                                                            ', ')[
+                                                                    0]),
+                                                                double.parse(data
+                                                                    .docs[i][
+                                                                        'lat_long1']
+                                                                    .toString()
+                                                                    .split(
+                                                                        ', ')[1])),
+                                                          );
+                                                          if (result.points
+                                                              .isNotEmpty) {
+                                                            polylineCoordinates = result
+                                                                .points
+                                                                .map((point) => LatLng(
+                                                                    point
+                                                                        .latitude,
+                                                                    point
+                                                                        .longitude))
+                                                                .toList();
+                                                          }
+
+                                                          setState(() {
+                                                            poly = Polyline(
+                                                              isDotted: true,
+                                                              strokeWidth: 5,
+                                                              points:
+                                                                  polylineCoordinates,
+                                                              color: Colors.red,
+                                                            );
+                                                          });
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
+                                                        child: TextWidget(
+                                                          text: 'Yes',
+                                                          fontSize: 14,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  );
+                                                },
+                                              );
+                                            },
+                                            child: Container(
+                                              width: 5,
+                                              height: 5,
+                                              decoration: BoxDecoration(
+                                                color: data.docs[i]['Status'] ==
+                                                        'Available'
+                                                    ? Colors.green
+                                                    : data.docs[i]['Status'] ==
+                                                            'Reserved'
+                                                        ? Colors.amber
+                                                        : Colors.red,
+                                                border: Border.all(
+                                                    color: Colors.black,
+                                                    width: 0.5),
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    )
+                                ],
                               ),
                             ],
                           ),
