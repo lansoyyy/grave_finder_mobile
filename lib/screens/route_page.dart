@@ -9,6 +9,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:grave_finder/screens/reservation_page.dart';
+import 'package:grave_finder/utlis/get_location.dart';
 import 'package:grave_finder/utlis/keys.dart';
 import 'package:grave_finder/widgets/drawer_widget.dart';
 import 'package:grave_finder/widgets/toast_widget.dart';
@@ -62,6 +63,14 @@ class _RouteScreenState extends State<RouteScreen> {
       .doc(FirebaseAuth.instance.currentUser!.uid)
       .snapshots();
 
+  bool started = false;
+
+  bool navigated = false;
+
+  String address = '';
+
+  final map = MapController();
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<DocumentSnapshot>(
@@ -76,6 +85,19 @@ class _RouteScreenState extends State<RouteScreen> {
           }
           dynamic userdata = snapshot.data;
           return Scaffold(
+            floatingActionButton: navigated
+                ? FloatingActionButton(
+                    child: const Icon(Icons.play_arrow),
+                    onPressed: () async {
+                      address = await getAddressFromLatLng(lat, lng);
+
+                      setState(() {
+                        navigated = false;
+                        started = true;
+                      });
+                    },
+                  )
+                : const SizedBox(),
             drawer: const DrawerWidget(),
             appBar: AppBar(
               backgroundColor: Colors.white,
@@ -113,6 +135,7 @@ class _RouteScreenState extends State<RouteScreen> {
                       return Stack(
                         children: [
                           FlutterMap(
+                            mapController: map,
                             options: MapOptions(
                               zoom: 18,
                               center: LatLng(14.110739, 121.550554),
@@ -237,8 +260,8 @@ class _RouteScreenState extends State<RouteScreen> {
                                                           }
 
                                                           setState(() {
+                                                            navigated = true;
                                                             poly = Polyline(
-                                                              isDotted: true,
                                                               strokeWidth: 5,
                                                               points:
                                                                   polylineCoordinates,
@@ -282,6 +305,59 @@ class _RouteScreenState extends State<RouteScreen> {
                               ),
                             ],
                           ),
+                          !started
+                              ? const SizedBox()
+                              : Align(
+                                  alignment: Alignment.bottomCenter,
+                                  child: Container(
+                                    height: 100,
+                                    width: double.infinity,
+                                    color: Colors.white,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 10, right: 10),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          const Icon(
+                                            Icons.location_on_rounded,
+                                            size: 50,
+                                            color: Colors.red,
+                                          ),
+                                          const SizedBox(
+                                            width: 10,
+                                          ),
+                                          SizedBox(
+                                            width: 200,
+                                            child: TextWidget(
+                                              text: address,
+                                              fontSize: 18,
+                                              fontFamily: 'Bold',
+                                            ),
+                                          ),
+                                          Card(
+                                            child: TextButton.icon(
+                                              onPressed: () {
+                                                map.move(LatLng(lat, lng), 18);
+                                              },
+                                              icon: const Icon(
+                                                Icons.my_location,
+                                                color: Colors.red,
+                                              ),
+                                              label: TextWidget(
+                                                text: 'Center',
+                                                fontSize: 14,
+                                              ),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
                         ],
                       );
                     })
