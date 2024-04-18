@@ -145,6 +145,31 @@ class _RouteScreenState extends State<RouteScreen> {
                         ),
                         MarkerLayer(
                           markers: [
+                            Marker(
+                              width: 150,
+                              height: 40,
+                              point: LatLng(lat, lng),
+                              builder: (context) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(
+                                      bottom: 15, right: 10),
+                                  child: Container(
+                                    height: 50,
+                                    decoration: BoxDecoration(
+                                      color: Colors.red,
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                    child: Center(
+                                      child: TextWidget(
+                                        text: address,
+                                        fontSize: 11,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
                             for (int i = 0; i < data.docs.length; i++)
                               Marker(
                                 height: 8,
