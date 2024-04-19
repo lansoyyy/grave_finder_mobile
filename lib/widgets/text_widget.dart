@@ -24,7 +24,7 @@ class TextWidget extends StatelessWidget {
     return Text(
       text,
       textAlign: TextAlign.center,
-      maxLines: 1,
+      maxLines: 10,
       style: TextStyle(
           fontStyle: isItalize! ? FontStyle.italic : null,
           decoration: decoration,

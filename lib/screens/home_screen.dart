@@ -10,6 +10,7 @@ import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:grave_finder/screens/reservation_page.dart';
 import 'package:grave_finder/utlis/keys.dart';
+import 'package:grave_finder/widgets/button_widget.dart';
 import 'package:grave_finder/widgets/drawer_widget.dart';
 import 'package:grave_finder/widgets/toast_widget.dart';
 import 'package:photo_view/photo_view.dart';
@@ -163,20 +164,151 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   'Reserved') {
                                                 if (data.docs[i]['Status'] ==
                                                     'Available') {
-                                                  Navigator.of(context).push(
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              ReservationPage(
-                                                                id: data
-                                                                    .docs[i].id,
-                                                                username:
-                                                                    userdata[
-                                                                        'fname'],
-                                                                lotid: data
-                                                                    .docs[i][
-                                                                        'lot_no']
-                                                                    .toString(),
-                                                              )));
+                                                  showDialog(
+                                                    context: context,
+                                                    builder: (context) {
+                                                      return Dialog(
+                                                        child: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .fromLTRB(20,
+                                                                  10, 20, 10),
+                                                          child: Column(
+                                                            mainAxisSize:
+                                                                MainAxisSize
+                                                                    .min,
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              TextWidget(
+                                                                text:
+                                                                    'GRAVE INFORMATION',
+                                                                fontSize: 18,
+                                                                fontFamily:
+                                                                    'Bold',
+                                                              ),
+                                                              const SizedBox(
+                                                                height: 10,
+                                                              ),
+                                                              Column(
+                                                                mainAxisSize:
+                                                                    MainAxisSize
+                                                                        .min,
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  TextWidget(
+                                                                    text:
+                                                                        'Block Name: ${data.docs[i]['block_name']}',
+                                                                    fontSize:
+                                                                        13,
+                                                                    fontFamily:
+                                                                        'Bold',
+                                                                  ),
+                                                                  TextWidget(
+                                                                    text:
+                                                                        'Lot No.: ${data.docs[i]['lot_no']}',
+                                                                    fontSize:
+                                                                        13,
+                                                                    fontFamily:
+                                                                        'Bold',
+                                                                  ),
+                                                                  TextWidget(
+                                                                    text:
+                                                                        'Lot Size: ${data.docs[i]['Lot Size']}',
+                                                                    fontSize:
+                                                                        13,
+                                                                    fontFamily:
+                                                                        'Bold',
+                                                                  ),
+                                                                  TextWidget(
+                                                                    text:
+                                                                        'Lot per SQM: ${data.docs[i]['Price Per SQM']}',
+                                                                    fontSize:
+                                                                        13,
+                                                                    fontFamily:
+                                                                        'Bold',
+                                                                  ),
+                                                                  TextWidget(
+                                                                    text:
+                                                                        'Lot Whole Price: ${data.docs[i]['Whole Price']}',
+                                                                    fontSize:
+                                                                        13,
+                                                                    fontFamily:
+                                                                        'Bold',
+                                                                  ),
+                                                                  TextWidget(
+                                                                    text:
+                                                                        'Installment: ${data.docs[i]['Installment']}',
+                                                                    fontSize:
+                                                                        13,
+                                                                    fontFamily:
+                                                                        'Bold',
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                              const SizedBox(
+                                                                height: 10,
+                                                              ),
+                                                              Row(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .end,
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .center,
+                                                                children: [
+                                                                  ButtonWidget(
+                                                                    color: Colors
+                                                                        .white,
+                                                                    radius: 20,
+                                                                    height: 35,
+                                                                    width: 75,
+                                                                    textColor:
+                                                                        Colors
+                                                                            .black,
+                                                                    fontSize:
+                                                                        12,
+                                                                    label: 'No',
+                                                                    onPressed:
+                                                                        () {
+                                                                      Navigator.pop(
+                                                                          context);
+                                                                    },
+                                                                  ),
+                                                                  const SizedBox(
+                                                                    width: 10,
+                                                                  ),
+                                                                  ButtonWidget(
+                                                                    radius: 20,
+                                                                    height: 35,
+                                                                    width: 75,
+                                                                    fontSize:
+                                                                        12,
+                                                                    label:
+                                                                        'Reserve This',
+                                                                    onPressed:
+                                                                        () {
+                                                                      Navigator.pop(
+                                                                          context);
+                                                                      Navigator.of(context).push(MaterialPageRoute(
+                                                                          builder: (context) => ReservationPage(
+                                                                                id: data.docs[i].id,
+                                                                                username: userdata['fname'],
+                                                                                lotid: data.docs[i]['lot_no'].toString(),
+                                                                              )));
+                                                                    },
+                                                                  )
+                                                                ],
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      );
+                                                    },
+                                                  );
                                                 } else {
                                                   showToast(
                                                       'Slot not available!');

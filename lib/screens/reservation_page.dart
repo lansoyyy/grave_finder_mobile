@@ -213,8 +213,52 @@ class _ReservationPageState extends State<ReservationPage> {
                       'Name': '${fname.text} ${lname.text}',
                       'Status': 'Reserved',
                     }).whenComplete(() {
-                      showToast('Reversation was succesfully sent!');
-                      Navigator.pop(context);
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return Dialog(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      TextWidget(
+                                        text:
+                                            'Reservation Successful! Please proceed to the San Luis Memorial Park office (Lucban Academy, San Luis St., Barangay 8, Lucban, Quezon) Within 5-7 days for confirmation and approval of the reservation. If it expires, your reservation wil be removed from the list of pre-reserves.',
+                                        fontSize: 13,
+                                        fontFamily: 'Bold',
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  Center(
+                                    child: ButtonWidget(
+                                      radius: 20,
+                                      height: 35,
+                                      width: 75,
+                                      fontSize: 12,
+                                      label: 'Okay',
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      );
                     });
                   },
                 ),
