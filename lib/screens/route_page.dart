@@ -19,6 +19,8 @@ import 'package:photo_view/photo_view.dart';
 import 'package:latlong2/latlong.dart';
 import '../widgets/text_widget.dart';
 
+import 'package:intl/intl.dart' show DateFormat, toBeginningOfSentenceCase;
+
 class RouteScreen extends StatefulWidget {
   const RouteScreen({super.key});
 
@@ -103,325 +105,430 @@ class _RouteScreenState extends State<RouteScreen> {
         centerTitle: true,
       ),
       body: hasLoaded
-          ? StreamBuilder<QuerySnapshot>(
-              stream:
-                  FirebaseFirestore.instance.collection('Slots').snapshots(),
-              builder: (BuildContext context,
-                  AsyncSnapshot<QuerySnapshot> snapshot) {
-                if (snapshot.hasError) {
-                  print('error');
-                  return const Center(child: Text('Error'));
-                }
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Padding(
-                    padding: EdgeInsets.only(top: 50),
-                    child: Center(
-                        child: CircularProgressIndicator(
-                      color: Colors.black,
-                    )),
-                  );
-                }
+          ? Stack(
+              children: [
+                StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('Slots')
+                        .snapshots(),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<QuerySnapshot> snapshot) {
+                      if (snapshot.hasError) {
+                        print('error');
+                        return const Center(child: Text('Error'));
+                      }
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Padding(
+                          padding: EdgeInsets.only(top: 50),
+                          child: Center(
+                              child: CircularProgressIndicator(
+                            color: Colors.black,
+                          )),
+                        );
+                      }
 
-                final data = snapshot.requireData;
+                      final data = snapshot.requireData;
 
-                return Stack(
-                  children: [
-                    FlutterMap(
-                      mapController: map,
-                      options: MapOptions(
-                        zoom: 18,
-                        center: LatLng(14.110739, 121.550554),
-                        minZoom: 1,
-                        maxZoom: 100,
-                      ),
-                      children: [
-                        TileLayer(
-                          urlTemplate:
-                              'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                          userAgentPackageName: 'com.example.app',
-                        ),
-                        PolylineLayer(
-                          polylines: [poly],
-                        ),
-                        MarkerLayer(
-                          markers: [
-                            Marker(
-                              width: 150,
-                              height: 40,
-                              point: LatLng(lat, lng),
-                              builder: (context) {
-                                return Padding(
-                                  padding: const EdgeInsets.only(
-                                      bottom: 15, right: 10),
-                                  child: Container(
-                                    height: 50,
-                                    decoration: BoxDecoration(
-                                      color: Colors.red,
-                                      borderRadius: BorderRadius.circular(5),
-                                    ),
-                                    child: Center(
-                                      child: TextWidget(
-                                        text: address,
-                                        fontSize: 11,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
+                      return Stack(
+                        children: [
+                          FlutterMap(
+                            mapController: map,
+                            options: MapOptions(
+                              zoom: 18,
+                              center: LatLng(14.110739, 121.550554),
+                              minZoom: 1,
+                              maxZoom: 100,
                             ),
-                            for (int i = 0; i < data.docs.length; i++)
-                              Marker(
-                                height: 8,
-                                width: 8,
-                                point: LatLng(
-                                    double.parse(data.docs[i]['lat_long1']
-                                        .toString()
-                                        .split(', ')[0]),
-                                    double.parse(data.docs[i]['lat_long1']
-                                        .toString()
-                                        .split(', ')[1])),
-                                builder: (context) {
-                                  return Transform.rotate(
-                                    angle: 147 * 3.1415926535897932 / 190,
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        showDialog(
-                                          context: context,
-                                          builder: (context) {
-                                            return AlertDialog(
-                                              title: TextWidget(
-                                                text:
-                                                    'Are you sure you want to go this grave?',
-                                                fontSize: 18,
-                                                fontFamily: 'Bold',
+                            children: [
+                              TileLayer(
+                                urlTemplate:
+                                    'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                userAgentPackageName: 'com.example.app',
+                              ),
+                              PolylineLayer(
+                                polylines: [poly],
+                              ),
+                              MarkerLayer(
+                                markers: [
+                                  Marker(
+                                    width: 150,
+                                    height: 40,
+                                    point: LatLng(lat, lng),
+                                    builder: (context) {
+                                      return Padding(
+                                        padding: const EdgeInsets.only(
+                                            bottom: 15, right: 10),
+                                        child: Container(
+                                          height: 50,
+                                          decoration: BoxDecoration(
+                                            color: Colors.red,
+                                            borderRadius:
+                                                BorderRadius.circular(5),
+                                          ),
+                                          child: Center(
+                                            child: TextWidget(
+                                              text: address,
+                                              fontSize: 11,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                  for (int i = 0; i < data.docs.length; i++)
+                                    Marker(
+                                      height: 8,
+                                      width: 8,
+                                      point: LatLng(
+                                          double.parse(data.docs[i]['lat_long1']
+                                              .toString()
+                                              .split(', ')[0]),
+                                          double.parse(data.docs[i]['lat_long1']
+                                              .toString()
+                                              .split(', ')[1])),
+                                      builder: (context) {
+                                        return Transform.rotate(
+                                          angle: 147 * 3.1415926535897932 / 190,
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              navDialog(data, i);
+                                            },
+                                            child: Container(
+                                              width: 5,
+                                              height: 5,
+                                              decoration: BoxDecoration(
+                                                color: data.docs[i]['Status'] ==
+                                                        'Available'
+                                                    ? Colors.green
+                                                    : data.docs[i]['Status'] ==
+                                                            'Reserved'
+                                                        ? Colors.amber
+                                                        : Colors.red,
+                                                border: Border.all(
+                                                    color: Colors.black,
+                                                    width: 0.5),
                                               ),
-                                              content: data.docs[i]['Status'] ==
-                                                          'Available' ||
-                                                      data.docs[i]['Status'] ==
-                                                          'Reserved'
-                                                  ? const SizedBox()
-                                                  : Column(
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        TextWidget(
-                                                          text:
-                                                              'Name: ${data.docs[i]['Name']}',
-                                                          fontSize: 18,
-                                                        ),
-                                                        TextWidget(
-                                                          text:
-                                                              'Born: ${data.docs[i]['Born']}',
-                                                          fontSize: 16,
-                                                        ),
-                                                        TextWidget(
-                                                          text:
-                                                              'Died: ${data.docs[i]['Died']}',
-                                                          fontSize: 16,
-                                                        ),
-                                                      ],
-                                                    ),
-                                              actions: [
-                                                TextButton(
-                                                  onPressed: () {
-                                                    Navigator.pop(context);
-                                                  },
-                                                  child: TextWidget(
-                                                    text: 'No',
-                                                    fontSize: 14,
-                                                  ),
-                                                ),
-                                                TextButton(
-                                                  onPressed: () async {
-                                                    PolylineResult result =
-                                                        await polylinePoints
-                                                            .getRouteBetweenCoordinates(
-                                                      kGoogleApiKey,
-                                                      PointLatLng(lat, lng),
-                                                      PointLatLng(
-                                                          double.parse(data
-                                                              .docs[i]
-                                                                  ['lat_long1']
-                                                              .toString()
-                                                              .split(', ')[0]),
-                                                          double.parse(data
-                                                              .docs[i]
-                                                                  ['lat_long1']
-                                                              .toString()
-                                                              .split(', ')[1])),
-                                                    );
-                                                    if (result
-                                                        .points.isNotEmpty) {
-                                                      polylineCoordinates = result
-                                                          .points
-                                                          .map((point) => LatLng(
-                                                              point.latitude,
-                                                              point.longitude))
-                                                          .toList();
-                                                    }
-
-                                                    setState(() {
-                                                      selectedlat =
-                                                          double.parse(data
-                                                              .docs[i]
-                                                                  ['lat_long1']
-                                                              .toString()
-                                                              .split(', ')[0]);
-                                                      selectedlng =
-                                                          double.parse(data
-                                                              .docs[i]
-                                                                  ['lat_long1']
-                                                              .toString()
-                                                              .split(', ')[1]);
-                                                      navigated = true;
-                                                      poly = Polyline(
-                                                        strokeWidth: 5,
-                                                        points:
-                                                            polylineCoordinates,
-                                                        color: Colors.red,
-                                                      );
-                                                    });
-                                                    Navigator.pop(context);
-                                                  },
-                                                  child: TextWidget(
-                                                    text: 'Yes',
-                                                    fontSize: 14,
-                                                  ),
-                                                ),
-                                              ],
-                                            );
-                                          },
+                                            ),
+                                          ),
                                         );
                                       },
-                                      child: Container(
-                                        width: 5,
-                                        height: 5,
-                                        decoration: BoxDecoration(
-                                          color: data.docs[i]['Status'] ==
-                                                  'Available'
-                                              ? Colors.green
-                                              : data.docs[i]['Status'] ==
-                                                      'Reserved'
-                                                  ? Colors.amber
-                                                  : Colors.red,
-                                          border: Border.all(
-                                              color: Colors.black, width: 0.5),
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              )
-                          ],
-                        ),
-                      ],
-                    ),
-                    !started
-                        ? const SizedBox()
-                        : Container(
-                            width: double.infinity,
-                            height: 150,
-                            decoration: const BoxDecoration(
-                              color: Colors.black,
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Row(
-                                children: [
-                                  const Icon(
-                                    Icons.u_turn_left,
-                                    color: Colors.red,
-                                    size: 75,
-                                  ),
-                                  const SizedBox(
-                                    width: 20,
-                                  ),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      TextWidget(
-                                        text:
-                                            '${calculateDistance(lat, lng, selectedlat, selectedlng).toStringAsFixed(2)}km away',
-                                        fontSize: 32,
-                                        color: Colors.white,
-                                        fontFamily: 'Bold',
-                                      ),
-                                      TextWidget(
-                                        text:
-                                            '${calculateTravelTime(calculateDistance(lat, lng, selectedlat, selectedlng), 40).toStringAsFixed(2)} mins',
-                                        fontSize: 24,
-                                        color: Colors.grey,
-                                        fontFamily: 'Bold',
-                                      ),
-                                    ],
-                                  ),
+                                    )
                                 ],
                               ),
-                            ),
+                            ],
                           ),
-                    !started
-                        ? const SizedBox()
-                        : Align(
-                            alignment: Alignment.bottomCenter,
-                            child: Container(
-                              height: 100,
-                              width: double.infinity,
-                              color: Colors.white,
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.only(left: 10, right: 10),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    const Icon(
-                                      Icons.location_on_rounded,
-                                      size: 50,
-                                      color: Colors.red,
+                          !started
+                              ? const SizedBox()
+                              : Container(
+                                  width: double.infinity,
+                                  height: 150,
+                                  decoration: const BoxDecoration(
+                                    color: Colors.black,
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Row(
+                                      children: [
+                                        const Icon(
+                                          Icons.u_turn_left,
+                                          color: Colors.red,
+                                          size: 75,
+                                        ),
+                                        const SizedBox(
+                                          width: 20,
+                                        ),
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            TextWidget(
+                                              text:
+                                                  '${calculateDistance(lat, lng, selectedlat, selectedlng).toStringAsFixed(2)}km away',
+                                              fontSize: 32,
+                                              color: Colors.white,
+                                              fontFamily: 'Bold',
+                                            ),
+                                            TextWidget(
+                                              text:
+                                                  '${calculateTravelTime(calculateDistance(lat, lng, selectedlat, selectedlng), 40).toStringAsFixed(2)} mins',
+                                              fontSize: 24,
+                                              color: Colors.grey,
+                                              fontFamily: 'Bold',
+                                            ),
+                                          ],
+                                        ),
+                                      ],
                                     ),
-                                    const SizedBox(
-                                      width: 10,
-                                    ),
-                                    SizedBox(
-                                      width: 200,
-                                      child: TextWidget(
-                                        text: address,
-                                        fontSize: 18,
-                                        fontFamily: 'Bold',
+                                  ),
+                                ),
+                          !started
+                              ? const SizedBox()
+                              : Align(
+                                  alignment: Alignment.bottomCenter,
+                                  child: Container(
+                                    height: 100,
+                                    width: double.infinity,
+                                    color: Colors.white,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 10, right: 10),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          const Icon(
+                                            Icons.location_on_rounded,
+                                            size: 50,
+                                            color: Colors.red,
+                                          ),
+                                          const SizedBox(
+                                            width: 10,
+                                          ),
+                                          SizedBox(
+                                            width: 200,
+                                            child: TextWidget(
+                                              text: address,
+                                              fontSize: 18,
+                                              fontFamily: 'Bold',
+                                            ),
+                                          ),
+                                          Card(
+                                            child: TextButton.icon(
+                                              onPressed: () {
+                                                map.move(LatLng(lat, lng), 18);
+                                              },
+                                              icon: const Icon(
+                                                Icons.my_location,
+                                                color: Colors.red,
+                                              ),
+                                              label: TextWidget(
+                                                text: 'Center',
+                                                fontSize: 14,
+                                              ),
+                                            ),
+                                          )
+                                        ],
                                       ),
                                     ),
-                                    Card(
-                                      child: TextButton.icon(
-                                        onPressed: () {
-                                          map.move(LatLng(lat, lng), 18);
+                                  ),
+                                ),
+                        ],
+                      );
+                    }),
+                Padding(
+                  padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
+                  child: Column(
+                    children: [
+                      Container(
+                        height: 40,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(
+                              color: Colors.black,
+                            ),
+                            borderRadius: BorderRadius.circular(100)),
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 10, right: 10),
+                          child: TextFormField(
+                            style: const TextStyle(
+                                color: Colors.black,
+                                fontFamily: 'Regular',
+                                fontSize: 14),
+                            onChanged: (value) {
+                              setState(() {
+                                nameSearched = value;
+                              });
+                            },
+                            decoration: const InputDecoration(
+                                labelStyle: TextStyle(
+                                  color: Colors.black,
+                                ),
+                                hintText: 'Search grave',
+                                hintStyle: TextStyle(fontFamily: 'QRegular'),
+                                prefixIcon: Icon(
+                                  Icons.search,
+                                  color: Colors.grey,
+                                )),
+                            controller: searchController,
+                          ),
+                        ),
+                      ),
+                      nameSearched == ''
+                          ? const SizedBox()
+                          : StreamBuilder<QuerySnapshot>(
+                              stream: FirebaseFirestore.instance
+                                  .collection('Slots')
+                                  .where('Name',
+                                      isGreaterThanOrEqualTo:
+                                          toBeginningOfSentenceCase(
+                                              nameSearched))
+                                  .where('Name',
+                                      isLessThan:
+                                          '${toBeginningOfSentenceCase(nameSearched)}z')
+                                  .snapshots(),
+                              builder: (BuildContext context,
+                                  AsyncSnapshot<QuerySnapshot> snapshot) {
+                                if (snapshot.hasError) {
+                                  print('error');
+                                  return const Center(child: Text('Error'));
+                                }
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return const Padding(
+                                    padding: EdgeInsets.only(top: 50),
+                                    child: Center(
+                                        child: CircularProgressIndicator(
+                                      color: Colors.black,
+                                    )),
+                                  );
+                                }
+
+                                final data = snapshot.requireData;
+                                return Container(
+                                  width: double.infinity,
+                                  height: 150,
+                                  color: Colors.white,
+                                  child: ListView.separated(
+                                    itemCount: data.docs.length,
+                                    separatorBuilder: (context, index) {
+                                      return const Divider();
+                                    },
+                                    itemBuilder: (context, index) {
+                                      return ListTile(
+                                        onTap: () {
+                                          navDialog(data, index);
                                         },
-                                        icon: const Icon(
-                                          Icons.my_location,
+                                        leading: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            TextWidget(
+                                              text:
+                                                  'Name: ${data.docs[index]['Name']}',
+                                              fontSize: 14,
+                                              fontFamily: 'Bold',
+                                            ),
+                                            TextWidget(
+                                              text:
+                                                  'Born: ${data.docs[index]['Born']}',
+                                              fontSize: 11,
+                                            ),
+                                            TextWidget(
+                                              text:
+                                                  'Died: ${data.docs[index]['Died']}',
+                                              fontSize: 11,
+                                            ),
+                                          ],
+                                        ),
+                                        trailing: const Icon(
+                                          Icons.assistant_navigation,
                                           color: Colors.red,
                                         ),
-                                        label: TextWidget(
-                                          text: 'Center',
-                                          fontSize: 14,
-                                        ),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                  ],
-                );
-              })
+                                      );
+                                    },
+                                  ),
+                                );
+                              }),
+                    ],
+                  ),
+                ),
+              ],
+            )
           : const Center(
               child: CircularProgressIndicator(),
             ),
+    );
+  }
+
+  navDialog(data, i) {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: TextWidget(
+            text: 'Are you sure you want to go this grave?',
+            fontSize: 18,
+            fontFamily: 'Bold',
+          ),
+          content: data.docs[i]['Status'] == 'Available' ||
+                  data.docs[i]['Status'] == 'Reserved'
+              ? const SizedBox()
+              : Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextWidget(
+                      text: 'Name: ${data.docs[i]['Name']}',
+                      fontSize: 18,
+                    ),
+                    TextWidget(
+                      text: 'Born: ${data.docs[i]['Born']}',
+                      fontSize: 16,
+                    ),
+                    TextWidget(
+                      text: 'Died: ${data.docs[i]['Died']}',
+                      fontSize: 16,
+                    ),
+                  ],
+                ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: TextWidget(
+                text: 'No',
+                fontSize: 14,
+              ),
+            ),
+            TextButton(
+              onPressed: () async {
+                PolylineResult result =
+                    await polylinePoints.getRouteBetweenCoordinates(
+                  kGoogleApiKey,
+                  PointLatLng(lat, lng),
+                  PointLatLng(
+                      double.parse(
+                          data.docs[i]['lat_long1'].toString().split(', ')[0]),
+                      double.parse(
+                          data.docs[i]['lat_long1'].toString().split(', ')[1])),
+                );
+                if (result.points.isNotEmpty) {
+                  polylineCoordinates = result.points
+                      .map((point) => LatLng(point.latitude, point.longitude))
+                      .toList();
+                }
+
+                setState(() {
+                  selectedlat = double.parse(
+                      data.docs[i]['lat_long1'].toString().split(', ')[0]);
+                  selectedlng = double.parse(
+                      data.docs[i]['lat_long1'].toString().split(', ')[1]);
+                  navigated = true;
+                  poly = Polyline(
+                    strokeWidth: 5,
+                    points: polylineCoordinates,
+                    color: Colors.red,
+                  );
+                });
+                Navigator.pop(context);
+              },
+              child: TextWidget(
+                text: 'Yes',
+                fontSize: 14,
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
