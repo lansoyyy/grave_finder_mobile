@@ -328,6 +328,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.3"
+  georouter:
+    dependency: "direct main"
+    description:
+      name: georouter
+      sha256: b69677c7b3d2251522e216f747a85546a987f2ffc473ebe333145229301ec39b
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.1+1"
   get:
     dependency: transitive
     description:

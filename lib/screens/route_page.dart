@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
+
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:grave_finder/screens/reservation_page.dart';
@@ -77,6 +78,8 @@ class _RouteScreenState extends State<RouteScreen> {
 
   final map = MapController();
 
+  int index = 0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -146,7 +149,9 @@ class _RouteScreenState extends State<RouteScreen> {
                                 userAgentPackageName: 'com.example.app',
                               ),
                               PolylineLayer(
-                                polylines: [poly],
+                                polylines: [
+                                  poly,
+                                ],
                               ),
                               MarkerLayer(
                                 markers: [
@@ -320,126 +325,132 @@ class _RouteScreenState extends State<RouteScreen> {
                         ],
                       );
                     }),
-                Padding(
-                  padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
-                  child: Column(
-                    children: [
-                      Container(
-                        height: 40,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border.all(
-                              color: Colors.black,
-                            ),
-                            borderRadius: BorderRadius.circular(100)),
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 10, right: 10),
-                          child: TextFormField(
-                            style: const TextStyle(
-                                color: Colors.black,
-                                fontFamily: 'Regular',
-                                fontSize: 14),
-                            onChanged: (value) {
-                              setState(() {
-                                nameSearched = value;
-                              });
-                            },
-                            decoration: const InputDecoration(
-                                labelStyle: TextStyle(
-                                  color: Colors.black,
-                                ),
-                                hintText: 'Search grave',
-                                hintStyle: TextStyle(fontFamily: 'QRegular'),
-                                prefixIcon: Icon(
-                                  Icons.search,
-                                  color: Colors.grey,
-                                )),
-                            controller: searchController,
-                          ),
-                        ),
-                      ),
-                      nameSearched == ''
-                          ? const SizedBox()
-                          : StreamBuilder<QuerySnapshot>(
-                              stream: FirebaseFirestore.instance
-                                  .collection('Slots')
-                                  .where('Name',
-                                      isGreaterThanOrEqualTo:
-                                          toBeginningOfSentenceCase(
-                                              nameSearched))
-                                  .where('Name',
-                                      isLessThan:
-                                          '${toBeginningOfSentenceCase(nameSearched)}z')
-                                  .snapshots(),
-                              builder: (BuildContext context,
-                                  AsyncSnapshot<QuerySnapshot> snapshot) {
-                                if (snapshot.hasError) {
-                                  print('error');
-                                  return const Center(child: Text('Error'));
-                                }
-                                if (snapshot.connectionState ==
-                                    ConnectionState.waiting) {
-                                  return const Padding(
-                                    padding: EdgeInsets.only(top: 50),
-                                    child: Center(
-                                        child: CircularProgressIndicator(
-                                      color: Colors.black,
-                                    )),
-                                  );
-                                }
-
-                                final data = snapshot.requireData;
-                                return Container(
-                                  width: double.infinity,
-                                  height: 150,
+                !navigated
+                    ? const SizedBox()
+                    : Padding(
+                        padding:
+                            const EdgeInsets.only(top: 20, left: 20, right: 20),
+                        child: Column(
+                          children: [
+                            Container(
+                              height: 40,
+                              width: double.infinity,
+                              decoration: BoxDecoration(
                                   color: Colors.white,
-                                  child: ListView.separated(
-                                    itemCount: data.docs.length,
-                                    separatorBuilder: (context, index) {
-                                      return const Divider();
-                                    },
-                                    itemBuilder: (context, index) {
-                                      return ListTile(
-                                        onTap: () {
-                                          navDialog(data, index);
-                                        },
-                                        leading: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            TextWidget(
-                                              text:
-                                                  'Name: ${data.docs[index]['Name']}',
-                                              fontSize: 14,
-                                              fontFamily: 'Bold',
-                                            ),
-                                            TextWidget(
-                                              text:
-                                                  'Born: ${data.docs[index]['Born']}',
-                                              fontSize: 11,
-                                            ),
-                                            TextWidget(
-                                              text:
-                                                  'Died: ${data.docs[index]['Died']}',
-                                              fontSize: 11,
-                                            ),
-                                          ],
-                                        ),
-                                        trailing: const Icon(
-                                          Icons.assistant_navigation,
-                                          color: Colors.red,
+                                  border: Border.all(
+                                    color: Colors.black,
+                                  ),
+                                  borderRadius: BorderRadius.circular(100)),
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.only(left: 10, right: 10),
+                                child: TextFormField(
+                                  style: const TextStyle(
+                                      color: Colors.black,
+                                      fontFamily: 'Regular',
+                                      fontSize: 14),
+                                  onChanged: (value) {
+                                    setState(() {
+                                      nameSearched = value;
+                                    });
+                                  },
+                                  decoration: const InputDecoration(
+                                      labelStyle: TextStyle(
+                                        color: Colors.black,
+                                      ),
+                                      hintText: 'Search grave',
+                                      hintStyle:
+                                          TextStyle(fontFamily: 'QRegular'),
+                                      prefixIcon: Icon(
+                                        Icons.search,
+                                        color: Colors.grey,
+                                      )),
+                                  controller: searchController,
+                                ),
+                              ),
+                            ),
+                            nameSearched == ''
+                                ? const SizedBox()
+                                : StreamBuilder<QuerySnapshot>(
+                                    stream: FirebaseFirestore.instance
+                                        .collection('Slots')
+                                        .where('Name',
+                                            isGreaterThanOrEqualTo:
+                                                toBeginningOfSentenceCase(
+                                                    nameSearched))
+                                        .where('Name',
+                                            isLessThan:
+                                                '${toBeginningOfSentenceCase(nameSearched)}z')
+                                        .snapshots(),
+                                    builder: (BuildContext context,
+                                        AsyncSnapshot<QuerySnapshot> snapshot) {
+                                      if (snapshot.hasError) {
+                                        print('error');
+                                        return const Center(
+                                            child: Text('Error'));
+                                      }
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.waiting) {
+                                        return const Padding(
+                                          padding: EdgeInsets.only(top: 50),
+                                          child: Center(
+                                              child: CircularProgressIndicator(
+                                            color: Colors.black,
+                                          )),
+                                        );
+                                      }
+
+                                      final data = snapshot.requireData;
+                                      return Container(
+                                        width: double.infinity,
+                                        height: 150,
+                                        color: Colors.white,
+                                        child: ListView.separated(
+                                          itemCount: data.docs.length,
+                                          separatorBuilder: (context, index) {
+                                            return const Divider();
+                                          },
+                                          itemBuilder: (context, index) {
+                                            return ListTile(
+                                              onTap: () {
+                                                navDialog(data, index);
+                                              },
+                                              leading: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  TextWidget(
+                                                    text:
+                                                        'Name: ${data.docs[index]['Name']}',
+                                                    fontSize: 14,
+                                                    fontFamily: 'Bold',
+                                                  ),
+                                                  TextWidget(
+                                                    text:
+                                                        'Born: ${data.docs[index]['Born']}',
+                                                    fontSize: 11,
+                                                  ),
+                                                  TextWidget(
+                                                    text:
+                                                        'Died: ${data.docs[index]['Died']}',
+                                                    fontSize: 11,
+                                                  ),
+                                                ],
+                                              ),
+                                              trailing: const Icon(
+                                                Icons.assistant_navigation,
+                                                color: Colors.red,
+                                              ),
+                                            );
+                                          },
                                         ),
                                       );
-                                    },
-                                  ),
-                                );
-                              }),
-                    ],
-                  ),
-                ),
+                                    }),
+                          ],
+                        ),
+                      ),
               ],
             )
           : const Center(
@@ -508,11 +519,13 @@ class _RouteScreenState extends State<RouteScreen> {
                 }
 
                 setState(() {
+                  index = i;
                   selectedlat = double.parse(
                       data.docs[i]['lat_long1'].toString().split(', ')[0]);
                   selectedlng = double.parse(
                       data.docs[i]['lat_long1'].toString().split(', ')[1]);
                   navigated = true;
+
                   poly = Polyline(
                     strokeWidth: 5,
                     points: polylineCoordinates,

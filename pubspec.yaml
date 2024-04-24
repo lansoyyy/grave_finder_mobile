@@ -48,6 +48,8 @@ dependencies:
   flutter_polyline_points: ^1.0.0
   geolocator:
   geocoding: ^3.0.0
+  georouter:
+  osrm:
 
 
 dev_dependencies:
