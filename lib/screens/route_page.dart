@@ -87,7 +87,7 @@ class _RouteScreenState extends State<RouteScreen> {
           ? FloatingActionButton(
               child: const Icon(Icons.play_arrow),
               onPressed: () async {
-                address = await getAddressFromLatLng(lat, lng);
+                address = await getAddressFromLatLng(14.110772, 121.552341);
 
                 setState(() {
                   navigated = false;
@@ -158,27 +158,29 @@ class _RouteScreenState extends State<RouteScreen> {
                                   Marker(
                                     width: 150,
                                     height: 40,
-                                    point: LatLng(lat, lng),
+                                    point: LatLng(14.110772, 121.552341),
                                     builder: (context) {
-                                      return Padding(
-                                        padding: const EdgeInsets.only(
-                                            bottom: 15, right: 10),
-                                        child: Container(
-                                          height: 50,
-                                          decoration: BoxDecoration(
-                                            color: Colors.red,
-                                            borderRadius:
-                                                BorderRadius.circular(5),
-                                          ),
-                                          child: Center(
-                                            child: TextWidget(
-                                              text: address,
-                                              fontSize: 11,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                      );
+                                      return started
+                                          ? Padding(
+                                              padding: const EdgeInsets.only(
+                                                  bottom: 15, right: 10),
+                                              child: Container(
+                                                height: 50,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.red,
+                                                  borderRadius:
+                                                      BorderRadius.circular(5),
+                                                ),
+                                                child: Center(
+                                                  child: TextWidget(
+                                                    text: address,
+                                                    fontSize: 11,
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              ),
+                                            )
+                                          : const SizedBox();
                                     },
                                   ),
                                   for (int i = 0; i < data.docs.length; i++)
@@ -251,14 +253,14 @@ class _RouteScreenState extends State<RouteScreen> {
                                           children: [
                                             TextWidget(
                                               text:
-                                                  '${calculateDistance(lat, lng, selectedlat, selectedlng).toStringAsFixed(2)}km away',
+                                                  '${calculateDistance(14.110772, 121.552341, selectedlat, selectedlng).toStringAsFixed(2)}km away',
                                               fontSize: 32,
                                               color: Colors.white,
                                               fontFamily: 'Bold',
                                             ),
                                             TextWidget(
                                               text:
-                                                  '${calculateTravelTime(calculateDistance(lat, lng, selectedlat, selectedlng), 40).toStringAsFixed(2)} mins',
+                                                  '${calculateTravelTime(calculateDistance(14.110772, 121.552341, selectedlat, selectedlng), 0.4).toStringAsFixed(2)} mins',
                                               fontSize: 24,
                                               color: Colors.grey,
                                               fontFamily: 'Bold',
@@ -505,7 +507,7 @@ class _RouteScreenState extends State<RouteScreen> {
                 PolylineResult result =
                     await polylinePoints.getRouteBetweenCoordinates(
                   kGoogleApiKey,
-                  PointLatLng(lat, lng),
+                  const PointLatLng(14.110772, 121.552341),
                   PointLatLng(
                       double.parse(
                           data.docs[i]['lat_long1'].toString().split(', ')[0]),
