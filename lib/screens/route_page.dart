@@ -240,6 +240,119 @@ class _RouteScreenState extends State<RouteScreen> {
                                         ])
                                 ],
                               ),
+                              MarkerLayer(
+                                markers: [
+                                  Marker(
+                                    width: 100,
+                                    point: LatLng(14.11056, 121.549367),
+                                    builder: (context) {
+                                      return RotationTransition(
+                                        turns: const AlwaysStoppedAnimation(
+                                            15 / -180),
+                                        child: TextWidget(
+                                          text: 'MAUS',
+                                          fontSize: 16,
+                                          fontFamily: 'Bold',
+                                          color: Colors.grey,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                  Marker(
+                                    width: 100,
+                                    point: LatLng(14.110927, 121.550031),
+                                    builder: (context) {
+                                      return RotationTransition(
+                                        turns: const AlwaysStoppedAnimation(
+                                            15 / -140),
+                                        child: TextWidget(
+                                          text: 'FAMILY OLD',
+                                          fontSize: 12,
+                                          fontFamily: 'Bold',
+                                          color: Colors.grey,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                  Marker(
+                                    width: 200,
+                                    point: LatLng(14.11063, 121.550004),
+                                    builder: (context) {
+                                      return Padding(
+                                        padding:
+                                            const EdgeInsets.only(top: 7.5),
+                                        child: RotationTransition(
+                                          turns: const AlwaysStoppedAnimation(
+                                              15 / -160),
+                                          child: TextWidget(
+                                            text: 'LAWN (OLD AREA)',
+                                            fontSize: 10,
+                                            fontFamily: 'Bold',
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                  Marker(
+                                    width: 200,
+                                    point: LatLng(14.110967, 121.550425),
+                                    builder: (context) {
+                                      return Padding(
+                                        padding: const EdgeInsets.only(top: 10),
+                                        child: RotationTransition(
+                                          turns: const AlwaysStoppedAnimation(
+                                              15 / -130),
+                                          child: TextWidget(
+                                            text: 'LAWN NEW',
+                                            fontSize: 10,
+                                            fontFamily: 'Bold',
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                  Marker(
+                                    width: 200,
+                                    point: LatLng(14.1117, 121.550694),
+                                    builder: (context) {
+                                      return Padding(
+                                        padding: const EdgeInsets.only(top: 8),
+                                        child: RotationTransition(
+                                          turns: const AlwaysStoppedAnimation(
+                                              15 / 115),
+                                          child: TextWidget(
+                                            text: 'MAP FAMILY',
+                                            fontSize: 8,
+                                            fontFamily: 'Bold',
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                  Marker(
+                                    width: 200,
+                                    point: LatLng(14.111099, 121.550974),
+                                    builder: (context) {
+                                      return Padding(
+                                        padding: const EdgeInsets.only(top: 8),
+                                        child: RotationTransition(
+                                          turns: const AlwaysStoppedAnimation(
+                                              15 / 115),
+                                          child: TextWidget(
+                                            text: 'MEMORY AREA',
+                                            fontSize: 9,
+                                            fontFamily: 'Bold',
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ),
                             ],
                           ),
                           !started
