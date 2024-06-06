@@ -94,6 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
           }
           dynamic userdata = snapshot.data;
           return Scaffold(
+            backgroundColor: const Color(0xffD3F8E2),
             drawer: const DrawerWidget(),
             appBar: AppBar(
               backgroundColor: Colors.white,
@@ -120,7 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           padding: EdgeInsets.only(top: 50),
                           child: Center(
                               child: CircularProgressIndicator(
-                            color: Colors.black,
+                            color: Colors.white,
                           )),
                         );
                       }
@@ -131,214 +132,455 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           FlutterMap(
                             options: MapOptions(
-                              zoom: 18,
-                              center: LatLng(14.110739, 121.550554),
-                              minZoom: 1,
-                              maxZoom: 18,
+                              onTap: (tapPosition, point) {
+                                for (int i = 0; i < data.docs.length; i++) {
+                                  final polygon = [
+                                    LatLng(
+                                        double.parse(data.docs[i]['lat_long1']
+                                            .toString()
+                                            .split(',')[0]),
+                                        double.parse(data.docs[i]['lat_long1']
+                                            .toString()
+                                            .split(',')[1])),
+                                    LatLng(
+                                        double.parse(data.docs[i]['lat_long2']
+                                            .toString()
+                                            .split(',')[0]),
+                                        double.parse(data.docs[i]['lat_long2']
+                                            .toString()
+                                            .split(',')[1])),
+                                    LatLng(
+                                        double.parse(data.docs[i]['lat_long3']
+                                            .toString()
+                                            .split(',')[0]),
+                                        double.parse(data.docs[i]['lat_long3']
+                                            .toString()
+                                            .split(',')[1])),
+                                    LatLng(
+                                        double.parse(data.docs[i]['lat_long4']
+                                            .toString()
+                                            .split(',')[0]),
+                                        double.parse(data.docs[i]['lat_long4']
+                                            .toString()
+                                            .split(',')[1]))
+                                    // Add other points of the polygon similarly
+                                  ];
+
+                                  // Check if the tap position is within the polygon
+                                  if (isPointInsidePolygon(point, polygon)) {
+                                    // Show the index of the clicked polygon
+                                    print('Clicked on polygon at index $i');
+
+                                    if (data.docs[i]['Status'] != 'Reserved') {
+                                      if (data.docs[i]['Status'] ==
+                                          'Available') {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return Dialog(
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.fromLTRB(
+                                                        20, 10, 20, 10),
+                                                child: Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    TextWidget(
+                                                      text: 'GRAVE INFORMATION',
+                                                      fontSize: 18,
+                                                      fontFamily: 'Bold',
+                                                    ),
+                                                    const SizedBox(
+                                                      height: 10,
+                                                    ),
+                                                    Column(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        TextWidget(
+                                                          text:
+                                                              'Block Name: ${data.docs[i]['block_name']}',
+                                                          fontSize: 13,
+                                                          fontFamily: 'Bold',
+                                                        ),
+                                                        TextWidget(
+                                                          text:
+                                                              'Lot No.: ${data.docs[i]['lot_no']}',
+                                                          fontSize: 13,
+                                                          fontFamily: 'Bold',
+                                                        ),
+                                                        TextWidget(
+                                                          text:
+                                                              'Lot Size: ${data.docs[i]['Lot Size']}',
+                                                          fontSize: 13,
+                                                          fontFamily: 'Bold',
+                                                        ),
+                                                        TextWidget(
+                                                          text:
+                                                              'Lot per SQM: ${data.docs[i]['Price Per SQM']}',
+                                                          fontSize: 13,
+                                                          fontFamily: 'Bold',
+                                                        ),
+                                                        TextWidget(
+                                                          text:
+                                                              'Lot Whole Price: ${data.docs[i]['Whole Price']}',
+                                                          fontSize: 13,
+                                                          fontFamily: 'Bold',
+                                                        ),
+                                                        TextWidget(
+                                                          text:
+                                                              'Installment: ${data.docs[i]['Installment']}',
+                                                          fontSize: 13,
+                                                          fontFamily: 'Bold',
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    const SizedBox(
+                                                      height: 10,
+                                                    ),
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment.end,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        ButtonWidget(
+                                                          color: Colors.white,
+                                                          radius: 20,
+                                                          height: 35,
+                                                          width: 75,
+                                                          textColor:
+                                                              Colors.black,
+                                                          fontSize: 12,
+                                                          label: 'No',
+                                                          onPressed: () {
+                                                            Navigator.pop(
+                                                                context);
+                                                          },
+                                                        ),
+                                                        const SizedBox(
+                                                          width: 10,
+                                                        ),
+                                                        ButtonWidget(
+                                                          radius: 20,
+                                                          height: 35,
+                                                          width: 75,
+                                                          fontSize: 12,
+                                                          label: 'Reserve This',
+                                                          onPressed: () {
+                                                            Navigator.pop(
+                                                                context);
+                                                            Navigator.of(context).push(
+                                                                MaterialPageRoute(
+                                                                    builder:
+                                                                        (context) =>
+                                                                            ReservationPage(
+                                                                              id: data.docs[i].id,
+                                                                              username: userdata['fname'],
+                                                                              lotid: data.docs[i]['lot_no'].toString(),
+                                                                            )));
+                                                          },
+                                                        )
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        );
+                                      } else {
+                                        showToast('Slot not available!');
+                                      }
+                                    } else {
+                                      showToast('Slot is reserved!');
+                                    }
+                                    break; // Stop checking other polygons
+                                  }
+                                }
+                              },
+                              zoom: 17.75,
+                              center: LatLng(14.110724, 121.550274),
                             ),
                             children: [
-                              TileLayer(
-                                urlTemplate:
-                                    'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                                userAgentPackageName: 'com.example.app',
-                              ),
-                              MarkerLayer(
-                                markers: [
+                              // TileLayer(
+                              //   errorImage: const AssetImage(
+                              //     'assets/images/filled_map.png',
+                              //   ),
+                              //   urlTemplate:
+                              //       'https://tile.openstreetmap.org1/{z}/{x}/{y}.png',
+                              //   userAgentPackageName: 'com.example.app',
+                              // ),
+                              // OverlayImageLayer(
+                              //   overlayImages: [
+                              //     OverlayImage(
+                              //       bounds: LatLngBounds(
+                              //         LatLng(14.11226, 121.5451),
+                              //         LatLng(14.10961, 121.55445),
+                              //       ),
+                              //       imageProvider: const AssetImage(
+                              //         'assets/images/filled_map.png',
+                              //       ),
+                              //     ),
+                              //   ],
+                              // ),
+                              PolygonLayer(
+                                polygons: [
                                   for (int i = 0; i < data.docs.length; i++)
-                                    Marker(
-                                      height: 8,
-                                      width: 8,
-                                      point: LatLng(
-                                          double.parse(data.docs[i]['lat_long1']
-                                              .toString()
-                                              .split(', ')[0]),
-                                          double.parse(data.docs[i]['lat_long1']
-                                              .toString()
-                                              .split(', ')[1])),
-                                      builder: (context) {
-                                        return Transform.rotate(
-                                          angle: 147 * 3.1415926535897932 / 190,
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              if (data.docs[i]['Status'] !=
-                                                  'Reserved') {
-                                                if (data.docs[i]['Status'] ==
-                                                    'Available') {
-                                                  showDialog(
-                                                    context: context,
-                                                    builder: (context) {
-                                                      return Dialog(
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .fromLTRB(20,
-                                                                  10, 20, 10),
-                                                          child: Column(
-                                                            mainAxisSize:
-                                                                MainAxisSize
-                                                                    .min,
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .start,
-                                                            children: [
-                                                              TextWidget(
-                                                                text:
-                                                                    'GRAVE INFORMATION',
-                                                                fontSize: 18,
-                                                                fontFamily:
-                                                                    'Bold',
-                                                              ),
-                                                              const SizedBox(
-                                                                height: 10,
-                                                              ),
-                                                              Column(
-                                                                mainAxisSize:
-                                                                    MainAxisSize
-                                                                        .min,
-                                                                crossAxisAlignment:
-                                                                    CrossAxisAlignment
-                                                                        .start,
-                                                                children: [
-                                                                  TextWidget(
-                                                                    text:
-                                                                        'Block Name: ${data.docs[i]['block_name']}',
-                                                                    fontSize:
-                                                                        13,
-                                                                    fontFamily:
-                                                                        'Bold',
-                                                                  ),
-                                                                  TextWidget(
-                                                                    text:
-                                                                        'Lot No.: ${data.docs[i]['lot_no']}',
-                                                                    fontSize:
-                                                                        13,
-                                                                    fontFamily:
-                                                                        'Bold',
-                                                                  ),
-                                                                  TextWidget(
-                                                                    text:
-                                                                        'Lot Size: ${data.docs[i]['Lot Size']}',
-                                                                    fontSize:
-                                                                        13,
-                                                                    fontFamily:
-                                                                        'Bold',
-                                                                  ),
-                                                                  TextWidget(
-                                                                    text:
-                                                                        'Lot per SQM: ${data.docs[i]['Price Per SQM']}',
-                                                                    fontSize:
-                                                                        13,
-                                                                    fontFamily:
-                                                                        'Bold',
-                                                                  ),
-                                                                  TextWidget(
-                                                                    text:
-                                                                        'Lot Whole Price: ${data.docs[i]['Whole Price']}',
-                                                                    fontSize:
-                                                                        13,
-                                                                    fontFamily:
-                                                                        'Bold',
-                                                                  ),
-                                                                  TextWidget(
-                                                                    text:
-                                                                        'Installment: ${data.docs[i]['Installment']}',
-                                                                    fontSize:
-                                                                        13,
-                                                                    fontFamily:
-                                                                        'Bold',
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                              const SizedBox(
-                                                                height: 10,
-                                                              ),
-                                                              Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .end,
-                                                                crossAxisAlignment:
-                                                                    CrossAxisAlignment
-                                                                        .center,
-                                                                children: [
-                                                                  ButtonWidget(
-                                                                    color: Colors
-                                                                        .white,
-                                                                    radius: 20,
-                                                                    height: 35,
-                                                                    width: 75,
-                                                                    textColor:
-                                                                        Colors
-                                                                            .black,
-                                                                    fontSize:
-                                                                        12,
-                                                                    label: 'No',
-                                                                    onPressed:
-                                                                        () {
-                                                                      Navigator.pop(
-                                                                          context);
-                                                                    },
-                                                                  ),
-                                                                  const SizedBox(
-                                                                    width: 10,
-                                                                  ),
-                                                                  ButtonWidget(
-                                                                    radius: 20,
-                                                                    height: 35,
-                                                                    width: 75,
-                                                                    fontSize:
-                                                                        12,
-                                                                    label:
-                                                                        'Reserve This',
-                                                                    onPressed:
-                                                                        () {
-                                                                      Navigator.pop(
-                                                                          context);
-                                                                      Navigator.of(context).push(MaterialPageRoute(
-                                                                          builder: (context) => ReservationPage(
-                                                                                id: data.docs[i].id,
-                                                                                username: userdata['fname'],
-                                                                                lotid: data.docs[i]['lot_no'].toString(),
-                                                                              )));
-                                                                    },
-                                                                  )
-                                                                ],
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      );
-                                                    },
-                                                  );
-                                                } else {
-                                                  showToast(
-                                                      'Slot not available!');
-                                                }
-                                              } else {
-                                                showToast('Slot is reserved!');
-                                              }
-                                            },
-                                            child: Container(
-                                              width: 5,
-                                              height: 5,
-                                              decoration: BoxDecoration(
-                                                color: data.docs[i]['Status'] ==
-                                                        'Available'
-                                                    ? Colors.green
-                                                    : data.docs[i]['Status'] ==
-                                                            'Reserved'
-                                                        ? Colors.amber
-                                                        : Colors.red,
-                                                border: Border.all(
-                                                    color: Colors.black,
-                                                    width: 0.5),
-                                              ),
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    )
+                                    Polygon(
+                                        isFilled: true,
+                                        color: data.docs[i]['Status'] ==
+                                                'Available'
+                                            ? Colors.green
+                                            : data.docs[i]['Status'] ==
+                                                    'Reserved'
+                                                ? Colors.amber
+                                                : Colors.red,
+                                        points: [
+                                          LatLng(
+                                              double.parse(data.docs[i]
+                                                      ['lat_long1']
+                                                  .toString()
+                                                  .split(',')[0]),
+                                              double.parse(data.docs[i]
+                                                      ['lat_long1']
+                                                  .toString()
+                                                  .split(',')[1])),
+                                          LatLng(
+                                              double.parse(data.docs[i]
+                                                      ['lat_long2']
+                                                  .toString()
+                                                  .split(',')[0]),
+                                              double.parse(data.docs[i]
+                                                      ['lat_long2']
+                                                  .toString()
+                                                  .split(',')[1])),
+                                          LatLng(
+                                              double.parse(data.docs[i]
+                                                      ['lat_long3']
+                                                  .toString()
+                                                  .split(',')[0]),
+                                              double.parse(data.docs[i]
+                                                      ['lat_long3']
+                                                  .toString()
+                                                  .split(',')[1])),
+                                          LatLng(
+                                              double.parse(data.docs[i]
+                                                      ['lat_long4']
+                                                  .toString()
+                                                  .split(',')[0]),
+                                              double.parse(data.docs[i]
+                                                      ['lat_long4']
+                                                  .toString()
+                                                  .split(',')[1])),
+                                        ])
                                 ],
                               ),
+
+                              // MarkerLayer(
+                              //   markers: [
+                              //     for (int i = 0; i < data.docs.length; i++)
+                              //       Marker(
+                              //         height: 8,
+                              //         width: 8,
+                              //         point: LatLng(
+                              //             double.parse(data.docs[i]['lat_long1']
+                              //                 .toString()
+                              //                 .split(',')[0]),
+                              //             double.parse(data.docs[i]['lat_long1']
+                              //                 .toString()
+                              //                 .split(',')[1])),
+                              //         builder: (context) {
+                              //           return Transform.rotate(
+                              //             angle: 147 * 3.1415926535897932 / 190,
+                              //             child: GestureDetector(
+                              //               onTap: () {
+                              //                 if (data.docs[i]['Status'] !=
+                              //                     'Reserved') {
+                              //                   if (data.docs[i]['Status'] ==
+                              //                       'Available') {
+                              //                     showDialog(
+                              //                       context: context,
+                              //                       builder: (context) {
+                              //                         return Dialog(
+                              //                           child: Padding(
+                              //                             padding:
+                              //                                 const EdgeInsets
+                              //                                     .fromLTRB(20,
+                              //                                     10, 20, 10),
+                              //                             child: Column(
+                              //                               mainAxisSize:
+                              //                                   MainAxisSize
+                              //                                       .min,
+                              //                               crossAxisAlignment:
+                              //                                   CrossAxisAlignment
+                              //                                       .start,
+                              //                               children: [
+                              //                                 TextWidget(
+                              //                                   text:
+                              //                                       'GRAVE INFORMATION',
+                              //                                   fontSize: 18,
+                              //                                   fontFamily:
+                              //                                       'Bold',
+                              //                                 ),
+                              //                                 const SizedBox(
+                              //                                   height: 10,
+                              //                                 ),
+                              //                                 Column(
+                              //                                   mainAxisSize:
+                              //                                       MainAxisSize
+                              //                                           .min,
+                              //                                   crossAxisAlignment:
+                              //                                       CrossAxisAlignment
+                              //                                           .start,
+                              //                                   children: [
+                              //                                     TextWidget(
+                              //                                       text:
+                              //                                           'Block Name: ${data.docs[i]['block_name']}',
+                              //                                       fontSize:
+                              //                                           13,
+                              //                                       fontFamily:
+                              //                                           'Bold',
+                              //                                     ),
+                              //                                     TextWidget(
+                              //                                       text:
+                              //                                           'Lot No.: ${data.docs[i]['lot_no']}',
+                              //                                       fontSize:
+                              //                                           13,
+                              //                                       fontFamily:
+                              //                                           'Bold',
+                              //                                     ),
+                              //                                     TextWidget(
+                              //                                       text:
+                              //                                           'Lot Size: ${data.docs[i]['Lot Size']}',
+                              //                                       fontSize:
+                              //                                           13,
+                              //                                       fontFamily:
+                              //                                           'Bold',
+                              //                                     ),
+                              //                                     TextWidget(
+                              //                                       text:
+                              //                                           'Lot per SQM: ${data.docs[i]['Price Per SQM']}',
+                              //                                       fontSize:
+                              //                                           13,
+                              //                                       fontFamily:
+                              //                                           'Bold',
+                              //                                     ),
+                              //                                     TextWidget(
+                              //                                       text:
+                              //                                           'Lot Whole Price: ${data.docs[i]['Whole Price']}',
+                              //                                       fontSize:
+                              //                                           13,
+                              //                                       fontFamily:
+                              //                                           'Bold',
+                              //                                     ),
+                              //                                     TextWidget(
+                              //                                       text:
+                              //                                           'Installment: ${data.docs[i]['Installment']}',
+                              //                                       fontSize:
+                              //                                           13,
+                              //                                       fontFamily:
+                              //                                           'Bold',
+                              //                                     ),
+                              //                                   ],
+                              //                                 ),
+                              //                                 const SizedBox(
+                              //                                   height: 10,
+                              //                                 ),
+                              //                                 Row(
+                              //                                   mainAxisAlignment:
+                              //                                       MainAxisAlignment
+                              //                                           .end,
+                              //                                   crossAxisAlignment:
+                              //                                       CrossAxisAlignment
+                              //                                           .center,
+                              //                                   children: [
+                              //                                     ButtonWidget(
+                              //                                       color: Colors
+                              //                                           .white,
+                              //                                       radius: 20,
+                              //                                       height: 35,
+                              //                                       width: 75,
+                              //                                       textColor:
+                              //                                           Colors
+                              //                                               .black,
+                              //                                       fontSize:
+                              //                                           12,
+                              //                                       label: 'No',
+                              //                                       onPressed:
+                              //                                           () {
+                              //                                         Navigator.pop(
+                              //                                             context);
+                              //                                       },
+                              //                                     ),
+                              //                                     const SizedBox(
+                              //                                       width: 10,
+                              //                                     ),
+                              //                                     ButtonWidget(
+                              //                                       radius: 20,
+                              //                                       height: 35,
+                              //                                       width: 75,
+                              //                                       fontSize:
+                              //                                           12,
+                              //                                       label:
+                              //                                           'Reserve This',
+                              //                                       onPressed:
+                              //                                           () {
+                              //                                         Navigator.pop(
+                              //                                             context);
+                              //                                         Navigator.of(context).push(MaterialPageRoute(
+                              //                                             builder: (context) => ReservationPage(
+                              //                                                   id: data.docs[i].id,
+                              //                                                   username: userdata['fname'],
+                              //                                                   lotid: data.docs[i]['lot_no'].toString(),
+                              //                                                 )));
+                              //                                       },
+                              //                                     )
+                              //                                   ],
+                              //                                 ),
+                              //                               ],
+                              //                             ),
+                              //                           ),
+                              //                         );
+                              //                       },
+                              //                     );
+                              //                   } else {
+                              //                     showToast(
+                              //                         'Slot not available!');
+                              //                   }
+                              //                 } else {
+                              //                   showToast('Slot is reserved!');
+                              //                 }
+                              //               },
+                              //               child: Container(
+                              //                 width: 5,
+                              //                 height: 5,
+                              //                 decoration: BoxDecoration(
+                              //                   color: data.docs[i]['Status'] ==
+                              //                           'Available'
+                              //                       ? Colors.green
+                              //                       : data.docs[i]['Status'] ==
+                              //                               'Reserved'
+                              //                           ? Colors.amber
+                              //                           : Colors.red,
+                              //                   border: Border.all(
+                              //                       color: Colors.white,
+                              //                       width: 0.5),
+                              //                 ),
+                              //               ),
+                              //             ),
+                              //           );
+                              //         },
+                              //       )
+                              //   ],
+                              // ),
                             ],
                           ),
                           Padding(

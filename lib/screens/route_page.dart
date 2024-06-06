@@ -83,6 +83,7 @@ class _RouteScreenState extends State<RouteScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xffD3F8E2),
       floatingActionButton: navigated
           ? FloatingActionButton(
               child: const Icon(Icons.play_arrow),
@@ -137,89 +138,106 @@ class _RouteScreenState extends State<RouteScreen> {
                           FlutterMap(
                             mapController: map,
                             options: MapOptions(
+                              onTap: (tapPosition, point) {
+                                for (int i = 0; i < data.docs.length; i++) {
+                                  final polygon = [
+                                    LatLng(
+                                        double.parse(data.docs[i]['lat_long1']
+                                            .toString()
+                                            .split(',')[0]),
+                                        double.parse(data.docs[i]['lat_long1']
+                                            .toString()
+                                            .split(',')[1])),
+                                    LatLng(
+                                        double.parse(data.docs[i]['lat_long2']
+                                            .toString()
+                                            .split(',')[0]),
+                                        double.parse(data.docs[i]['lat_long2']
+                                            .toString()
+                                            .split(',')[1])),
+                                    LatLng(
+                                        double.parse(data.docs[i]['lat_long3']
+                                            .toString()
+                                            .split(',')[0]),
+                                        double.parse(data.docs[i]['lat_long3']
+                                            .toString()
+                                            .split(',')[1])),
+                                    LatLng(
+                                        double.parse(data.docs[i]['lat_long4']
+                                            .toString()
+                                            .split(',')[0]),
+                                        double.parse(data.docs[i]['lat_long4']
+                                            .toString()
+                                            .split(',')[1]))
+                                    // Add other points of the polygon similarly
+                                  ];
+
+                                  // Check if the tap position is within the polygon
+                                  if (isPointInsidePolygon(point, polygon)) {
+                                    navDialog(data, i);
+                                    break; // Stop checking other polygons
+                                  }
+                                }
+                              },
                               zoom: 18,
-                              center: LatLng(14.110739, 121.550554),
-                              minZoom: 1,
-                              maxZoom: 100,
+                              center: LatLng(14.110724, 121.550274),
                             ),
                             children: [
-                              TileLayer(
-                                urlTemplate:
-                                    'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                              ),
                               PolylineLayer(
                                 polylines: [
                                   poly,
                                 ],
                               ),
-                              MarkerLayer(
-                                markers: [
-                                  Marker(
-                                    width: 150,
-                                    height: 40,
-                                    point: LatLng(14.110772, 121.552341),
-                                    builder: (context) {
-                                      return started
-                                          ? Padding(
-                                              padding: const EdgeInsets.only(
-                                                  bottom: 15, right: 10),
-                                              child: Container(
-                                                height: 50,
-                                                decoration: BoxDecoration(
-                                                  color: Colors.red,
-                                                  borderRadius:
-                                                      BorderRadius.circular(5),
-                                                ),
-                                                child: Center(
-                                                  child: TextWidget(
-                                                    text: address,
-                                                    fontSize: 11,
-                                                    color: Colors.white,
-                                                  ),
-                                                ),
-                                              ),
-                                            )
-                                          : const SizedBox();
-                                    },
-                                  ),
+                              PolygonLayer(
+                                polygons: [
                                   for (int i = 0; i < data.docs.length; i++)
-                                    Marker(
-                                      height: 8,
-                                      width: 8,
-                                      point: LatLng(
-                                          double.parse(data.docs[i]['lat_long1']
-                                              .toString()
-                                              .split(', ')[0]),
-                                          double.parse(data.docs[i]['lat_long1']
-                                              .toString()
-                                              .split(', ')[1])),
-                                      builder: (context) {
-                                        return Transform.rotate(
-                                          angle: 147 * 3.1415926535897932 / 190,
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              navDialog(data, i);
-                                            },
-                                            child: Container(
-                                              width: 5,
-                                              height: 5,
-                                              decoration: BoxDecoration(
-                                                color: data.docs[i]['Status'] ==
-                                                        'Available'
-                                                    ? Colors.green
-                                                    : data.docs[i]['Status'] ==
-                                                            'Reserved'
-                                                        ? Colors.amber
-                                                        : Colors.red,
-                                                border: Border.all(
-                                                    color: Colors.black,
-                                                    width: 0.5),
-                                              ),
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    )
+                                    Polygon(
+                                        isFilled: true,
+                                        color: data.docs[i]['Status'] ==
+                                                'Available'
+                                            ? Colors.green
+                                            : data.docs[i]['Status'] ==
+                                                    'Reserved'
+                                                ? Colors.amber
+                                                : Colors.red,
+                                        points: [
+                                          LatLng(
+                                              double.parse(data.docs[i]
+                                                      ['lat_long1']
+                                                  .toString()
+                                                  .split(',')[0]),
+                                              double.parse(data.docs[i]
+                                                      ['lat_long1']
+                                                  .toString()
+                                                  .split(',')[1])),
+                                          LatLng(
+                                              double.parse(data.docs[i]
+                                                      ['lat_long2']
+                                                  .toString()
+                                                  .split(',')[0]),
+                                              double.parse(data.docs[i]
+                                                      ['lat_long2']
+                                                  .toString()
+                                                  .split(',')[1])),
+                                          LatLng(
+                                              double.parse(data.docs[i]
+                                                      ['lat_long3']
+                                                  .toString()
+                                                  .split(',')[0]),
+                                              double.parse(data.docs[i]
+                                                      ['lat_long3']
+                                                  .toString()
+                                                  .split(',')[1])),
+                                          LatLng(
+                                              double.parse(data.docs[i]
+                                                      ['lat_long4']
+                                                  .toString()
+                                                  .split(',')[0]),
+                                              double.parse(data.docs[i]
+                                                      ['lat_long4']
+                                                  .toString()
+                                                  .split(',')[1])),
+                                        ])
                                 ],
                               ),
                             ],
@@ -509,10 +527,11 @@ class _RouteScreenState extends State<RouteScreen> {
                   const PointLatLng(14.110772, 121.552341),
                   PointLatLng(
                       double.parse(
-                          data.docs[i]['lat_long1'].toString().split(', ')[0]),
+                          data.docs[i]['lat_long1'].toString().split(',')[0]),
                       double.parse(
-                          data.docs[i]['lat_long1'].toString().split(', ')[1])),
+                          data.docs[i]['lat_long2'].toString().split(',')[1])),
                 );
+
                 if (result.points.isNotEmpty) {
                   polylineCoordinates = result.points
                       .map((point) => LatLng(point.latitude, point.longitude))
@@ -522,11 +541,10 @@ class _RouteScreenState extends State<RouteScreen> {
                 setState(() {
                   index = i;
                   selectedlat = double.parse(
-                      data.docs[i]['lat_long1'].toString().split(', ')[0]);
+                      data.docs[i]['lat_long1'].toString().split(',')[0]);
                   selectedlng = double.parse(
-                      data.docs[i]['lat_long1'].toString().split(', ')[1]);
+                      data.docs[i]['lat_long1'].toString().split(',')[1]);
                   navigated = true;
-
                   poly = Polyline(
                     strokeWidth: 5,
                     points: polylineCoordinates,

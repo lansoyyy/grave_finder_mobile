@@ -50,6 +50,7 @@ dependencies:
   geocoding: ^3.0.0
   flutter_osm_plugin:
   georouter:
+  flutter_svg_provider:
 
 
 dev_dependencies:
