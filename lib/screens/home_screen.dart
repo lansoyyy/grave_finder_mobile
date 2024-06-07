@@ -94,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
           }
           dynamic userdata = snapshot.data;
           return Scaffold(
-            backgroundColor: const Color(0xffD3F8E2),
+            backgroundColor: const Color.fromARGB(255, 217, 219, 217),
             drawer: const DrawerWidget(),
             appBar: AppBar(
               backgroundColor: Colors.white,
@@ -307,6 +307,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   }
                                 }
                               },
+                              minZoom: 17.75,
+                              maxZoom: 17.75,
                               zoom: 17.75,
                               center: LatLng(14.110724, 121.550274),
                             ),
@@ -319,19 +321,40 @@ class _HomeScreenState extends State<HomeScreen> {
                               //       'https://tile.openstreetmap.org1/{z}/{x}/{y}.png',
                               //   userAgentPackageName: 'com.example.app',
                               // ),
+
                               // OverlayImageLayer(
                               //   overlayImages: [
                               //     OverlayImage(
                               //       bounds: LatLngBounds(
-                              //         LatLng(14.11226, 121.5451),
+                              //         LatLng(14.11226, 121.5461),
                               //         LatLng(14.10961, 121.55445),
                               //       ),
                               //       imageProvider: const AssetImage(
-                              //         'assets/images/filled_map.png',
+                              //         'assets/images/filled_map_label.png',
                               //       ),
                               //     ),
                               //   ],
                               // ),
+
+                              MarkerLayer(
+                                markers: [
+                                  Marker(
+                                    width: 925,
+                                    height: 925,
+                                    point: LatLng(14.11100, 121.550180),
+                                    builder: (context) {
+                                      return Padding(
+                                        padding: const EdgeInsets.only(
+                                          top: 20,
+                                          left: 32.5,
+                                        ),
+                                        child: Image.asset(
+                                            'assets/images/filled_map_label.png'),
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ),
 
                               PolygonLayer(
                                 polygons: [
@@ -383,119 +406,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   .toString()
                                                   .split(',')[1])),
                                         ])
-                                ],
-                              ),
-                              MarkerLayer(
-                                markers: [
-                                  Marker(
-                                    width: 100,
-                                    point: LatLng(14.11056, 121.549367),
-                                    builder: (context) {
-                                      return RotationTransition(
-                                        turns: const AlwaysStoppedAnimation(
-                                            15 / -180),
-                                        child: TextWidget(
-                                          text: 'MAUS',
-                                          fontSize: 16,
-                                          fontFamily: 'Bold',
-                                          color: Colors.grey,
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                  Marker(
-                                    width: 100,
-                                    point: LatLng(14.110927, 121.550031),
-                                    builder: (context) {
-                                      return RotationTransition(
-                                        turns: const AlwaysStoppedAnimation(
-                                            15 / -140),
-                                        child: TextWidget(
-                                          text: 'FAMILY OLD',
-                                          fontSize: 12,
-                                          fontFamily: 'Bold',
-                                          color: Colors.grey,
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                  Marker(
-                                    width: 200,
-                                    point: LatLng(14.11063, 121.550004),
-                                    builder: (context) {
-                                      return Padding(
-                                        padding:
-                                            const EdgeInsets.only(top: 7.5),
-                                        child: RotationTransition(
-                                          turns: const AlwaysStoppedAnimation(
-                                              15 / -160),
-                                          child: TextWidget(
-                                            text: 'LAWN (OLD AREA)',
-                                            fontSize: 10,
-                                            fontFamily: 'Bold',
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                  Marker(
-                                    width: 200,
-                                    point: LatLng(14.110967, 121.550425),
-                                    builder: (context) {
-                                      return Padding(
-                                        padding: const EdgeInsets.only(top: 10),
-                                        child: RotationTransition(
-                                          turns: const AlwaysStoppedAnimation(
-                                              15 / -130),
-                                          child: TextWidget(
-                                            text: 'LAWN NEW',
-                                            fontSize: 10,
-                                            fontFamily: 'Bold',
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                  Marker(
-                                    width: 200,
-                                    point: LatLng(14.1117, 121.550694),
-                                    builder: (context) {
-                                      return Padding(
-                                        padding: const EdgeInsets.only(top: 8),
-                                        child: RotationTransition(
-                                          turns: const AlwaysStoppedAnimation(
-                                              15 / 115),
-                                          child: TextWidget(
-                                            text: 'MAP FAMILY',
-                                            fontSize: 8,
-                                            fontFamily: 'Bold',
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                  Marker(
-                                    width: 200,
-                                    point: LatLng(14.111099, 121.550974),
-                                    builder: (context) {
-                                      return Padding(
-                                        padding: const EdgeInsets.only(top: 8),
-                                        child: RotationTransition(
-                                          turns: const AlwaysStoppedAnimation(
-                                              15 / 115),
-                                          child: TextWidget(
-                                            text: 'MEMORY AREA',
-                                            fontSize: 9,
-                                            fontFamily: 'Bold',
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
                                 ],
                               ),
                             ],
