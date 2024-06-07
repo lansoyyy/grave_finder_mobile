@@ -83,14 +83,17 @@ class _RouteScreenState extends State<RouteScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-    backgroundColor: const Color.fromARGB(255, 217, 219, 217),
+      backgroundColor: const Color.fromARGB(255, 217, 219, 217),
       floatingActionButton: navigated
           ? FloatingActionButton(
               child: const Icon(Icons.play_arrow),
               onPressed: () async {
                 address = await getAddressFromLatLng(14.110772, 121.552341);
 
+                searchController.clear();
+
                 setState(() {
+                  nameSearched = '';
                   navigated = false;
                   started = true;
                 });
@@ -365,7 +368,7 @@ class _RouteScreenState extends State<RouteScreen> {
                         ],
                       );
                     }),
-                !navigated
+                started
                     ? const SizedBox()
                     : Padding(
                         padding:
@@ -557,9 +560,11 @@ class _RouteScreenState extends State<RouteScreen> {
                   polylineCoordinates = result.points
                       .map((point) => LatLng(point.latitude, point.longitude))
                       .toList();
-                }
+                } else {}
 
                 setState(() {
+                  searchController.clear();
+                  nameSearched = '';
                   index = i;
                   selectedlat = double.parse(
                       data.docs[i]['lat_long1'].toString().split(',')[0]);
@@ -569,7 +574,7 @@ class _RouteScreenState extends State<RouteScreen> {
                   poly = Polyline(
                     strokeWidth: 5,
                     points: polylineCoordinates,
-                    color: Colors.red,
+                    color: Colors.blue,
                   );
                 });
                 Navigator.pop(context);

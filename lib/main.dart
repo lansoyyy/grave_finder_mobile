@@ -1,7 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:grave_finder/firebase_options.dart';
-import 'package:grave_finder/screens/home_screen.dart';
 import 'package:grave_finder/screens/login_page.dart';
 import 'package:grave_finder/screens/sample_screen.dart';
 
@@ -21,7 +20,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: HomeScreen(),
+      home: LoginPage(),
     );
   }
 }
