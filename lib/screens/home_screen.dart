@@ -182,7 +182,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                               child: Padding(
                                                 padding:
                                                     const EdgeInsets.fromLTRB(
-                                                        20, 10, 20, 10),
+                                                        10, 10, 10, 10),
                                                 child: Column(
                                                   mainAxisSize:
                                                       MainAxisSize.min,
@@ -234,11 +234,74 @@ class _HomeScreenState extends State<HomeScreen> {
                                                           fontSize: 13,
                                                           fontFamily: 'Bold',
                                                         ),
-                                                        TextWidget(
-                                                          text:
-                                                              'Installment: ${data.docs[i]['Installment']}',
-                                                          fontSize: 13,
-                                                          fontFamily: 'Bold',
+                                                        Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .start,
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            TextWidget(
+                                                              text:
+                                                                  'Installment:  ',
+                                                              fontSize: 13,
+                                                              fontFamily:
+                                                                  'Bold',
+                                                            ),
+                                                            SizedBox(
+                                                              width: 220,
+                                                              child: Column(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .start,
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  TextWidget(
+                                                                    text: data
+                                                                        .docs[i]
+                                                                            [
+                                                                            'Installment']
+                                                                        .toString()
+                                                                        .split(
+                                                                            ', ')[0],
+                                                                    fontSize:
+                                                                        13,
+                                                                    fontFamily:
+                                                                        'Bold',
+                                                                  ),
+                                                                  TextWidget(
+                                                                    text: data
+                                                                        .docs[i]
+                                                                            [
+                                                                            'Installment']
+                                                                        .toString()
+                                                                        .split(
+                                                                            ', ')[1],
+                                                                    fontSize:
+                                                                        13,
+                                                                    fontFamily:
+                                                                        'Bold',
+                                                                  ),
+                                                                  TextWidget(
+                                                                    text: data
+                                                                        .docs[i]
+                                                                            [
+                                                                            'Installment']
+                                                                        .toString()
+                                                                        .split(
+                                                                            ', ')[2],
+                                                                    fontSize:
+                                                                        13,
+                                                                    fontFamily:
+                                                                        'Bold',
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ],
                                                         ),
                                                       ],
                                                     ),
