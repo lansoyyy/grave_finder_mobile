@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:ffi';
 
@@ -88,9 +89,24 @@ class _RouteScreenState extends State<RouteScreen> {
           ? FloatingActionButton(
               child: const Icon(Icons.play_arrow),
               onPressed: () async {
-                address = await getAddressFromLatLng(14.110772, 121.552341);
-
                 searchController.clear();
+
+                Timer.periodic(const Duration(seconds: 5), (timer) {
+                  {
+                    Geolocator.getCurrentPosition(
+                            desiredAccuracy: LocationAccuracy.best)
+                        .then((position) async {
+                      map.move(
+                          LatLng(position.latitude, position.longitude), 17.75);
+
+                      address = await getAddressFromLatLng(
+                          position.latitude, position.longitude);
+
+                      lat = position.latitude;
+                      lng = position.longitude;
+                    });
+                  }
+                });
 
                 setState(() {
                   nameSearched = '';
@@ -205,6 +221,19 @@ class _RouteScreenState extends State<RouteScreen> {
                                       );
                                     },
                                   ),
+                                  Marker(
+                                    width: 150,
+                                    height: 40,
+                                    point: LatLng(lat, lng),
+                                    builder: (context) {
+                                      return started
+                                          ? const Icon(
+                                              Icons.location_history_rounded,
+                                              color: Colors.blue,
+                                            )
+                                          : const SizedBox();
+                                    },
+                                  ),
                                 ],
                               ),
                               PolylineLayer(
@@ -294,14 +323,14 @@ class _RouteScreenState extends State<RouteScreen> {
                                           children: [
                                             TextWidget(
                                               text:
-                                                  '${calculateDistance(14.110772, 121.552341, selectedlat, selectedlng).toStringAsFixed(2)}km away',
+                                                  '${calculateDistance(lat, lng, selectedlat, selectedlng).toStringAsFixed(2)}km away',
                                               fontSize: 32,
                                               color: Colors.white,
                                               fontFamily: 'Bold',
                                             ),
                                             TextWidget(
                                               text:
-                                                  '${calculateTravelTime(calculateDistance(14.110772, 121.552341, selectedlat, selectedlng), 0.4).toStringAsFixed(2)} mins',
+                                                  '${calculateTravelTime(calculateDistance(lat, lng, selectedlat, selectedlng), 0.4).toStringAsFixed(2)} mins',
                                               fontSize: 24,
                                               color: Colors.grey,
                                               fontFamily: 'Bold',
