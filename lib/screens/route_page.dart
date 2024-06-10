@@ -108,7 +108,25 @@ class _RouteScreenState extends State<RouteScreen> {
                   }
                 });
 
+                PolylineResult result =
+                    await polylinePoints.getRouteBetweenCoordinates(
+                  kGoogleApiKey,
+                  PointLatLng(lat, lng),
+                  PointLatLng(selectedlat, selectedlng),
+                );
+
+                if (result.points.isNotEmpty) {
+                  polylineCoordinates = result.points
+                      .map((point) => LatLng(point.latitude, point.longitude))
+                      .toList();
+                } else {}
+
                 setState(() {
+                  poly = Polyline(
+                    strokeWidth: 5,
+                    points: polylineCoordinates,
+                    color: Colors.blue,
+                  );
                   nameSearched = '';
                   navigated = false;
                   started = true;
