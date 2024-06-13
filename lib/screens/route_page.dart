@@ -81,6 +81,55 @@ class _RouteScreenState extends State<RouteScreen> {
 
   int index = 0;
 
+  void startTracking() {
+    // Clear the search controller
+    searchController.clear();
+
+    // Periodic timer to update location every 5 seconds
+    Timer.periodic(const Duration(seconds: 5), (timer) {
+      Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
+          .then((position) async {
+        map.move(LatLng(position.latitude, position.longitude), 17.75);
+
+        address =
+            await getAddressFromLatLng(position.latitude, position.longitude);
+
+        setState(() {
+          lat = position.latitude;
+          lng = position.longitude;
+        });
+      });
+    });
+
+    // Function to update polyline coordinates
+    updatePolyline();
+  }
+
+  Future<void> updatePolyline() async {
+    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+      kGoogleApiKey,
+      PointLatLng(lat, lng),
+      PointLatLng(selectedlat, selectedlng),
+    );
+
+    if (result.points.isNotEmpty) {
+      polylineCoordinates = result.points
+          .map((point) => LatLng(point.latitude, point.longitude))
+          .toList();
+
+      setState(() {
+        poly = Polyline(
+          strokeWidth: 5,
+          points: polylineCoordinates,
+          color: Colors.blue,
+        );
+        nameSearched = '';
+        navigated = false;
+        started = true;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -89,48 +138,7 @@ class _RouteScreenState extends State<RouteScreen> {
           ? FloatingActionButton(
               child: const Icon(Icons.play_arrow),
               onPressed: () async {
-                searchController.clear();
-
-                Timer.periodic(const Duration(seconds: 5), (timer) {
-                  {
-                    Geolocator.getCurrentPosition(
-                            desiredAccuracy: LocationAccuracy.best)
-                        .then((position) async {
-                      map.move(
-                          LatLng(position.latitude, position.longitude), 17.75);
-
-                      address = await getAddressFromLatLng(
-                          position.latitude, position.longitude);
-
-                      lat = position.latitude;
-                      lng = position.longitude;
-                    });
-                  }
-                });
-
-                PolylineResult result =
-                    await polylinePoints.getRouteBetweenCoordinates(
-                  kGoogleApiKey,
-                  PointLatLng(lat, lng),
-                  PointLatLng(selectedlat, selectedlng),
-                );
-
-                if (result.points.isNotEmpty) {
-                  polylineCoordinates = result.points
-                      .map((point) => LatLng(point.latitude, point.longitude))
-                      .toList();
-                } else {}
-
-                setState(() {
-                  poly = Polyline(
-                    strokeWidth: 5,
-                    points: polylineCoordinates,
-                    color: Colors.blue,
-                  );
-                  nameSearched = '';
-                  navigated = false;
-                  started = true;
-                });
+                startTracking();
               },
             )
           : const SizedBox(),
