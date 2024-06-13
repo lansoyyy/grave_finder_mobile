@@ -250,24 +250,6 @@ class _RouteScreenState extends State<RouteScreen> {
                                       );
                                     },
                                   ),
-                                  Marker(
-                                    width: 150,
-                                    height: 40,
-                                    point: LatLng(lat, lng),
-                                    builder: (context) {
-                                      return started
-                                          ? const Icon(
-                                              Icons.location_history_rounded,
-                                              color: Colors.blue,
-                                            )
-                                          : const SizedBox();
-                                    },
-                                  ),
-                                ],
-                              ),
-                              PolylineLayer(
-                                polylines: [
-                                  poly,
                                 ],
                               ),
                               PolygonLayer(
@@ -320,6 +302,28 @@ class _RouteScreenState extends State<RouteScreen> {
                                                   .toString()
                                                   .split(',')[1])),
                                         ])
+                                ],
+                              ),
+                              PolylineLayer(
+                                polylines: [
+                                  poly,
+                                ],
+                              ),
+                              MarkerLayer(
+                                markers: [
+                                  Marker(
+                                    width: 150,
+                                    height: 40,
+                                    point: LatLng(lat, lng),
+                                    builder: (context) {
+                                      return started
+                                          ? const Icon(
+                                              Icons.location_history_rounded,
+                                              color: Colors.blue,
+                                            )
+                                          : const SizedBox();
+                                    },
+                                  ),
                                 ],
                               ),
                             ],
