@@ -86,7 +86,7 @@ class _RouteScreenState extends State<RouteScreen> {
     searchController.clear();
 
     // Periodic timer to update location every 5 seconds
-    Timer.periodic(const Duration(seconds: 5), (timer) {
+    Timer.periodic(const Duration(seconds: 15), (timer) {
       Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
           .then((position) async {
         map.move(LatLng(position.latitude, position.longitude), 17.75);
@@ -106,28 +106,31 @@ class _RouteScreenState extends State<RouteScreen> {
   }
 
   Future<void> updatePolyline() async {
-    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-      kGoogleApiKey,
-      PointLatLng(lat, lng),
-      PointLatLng(selectedlat, selectedlng),
-    );
+    Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
+        .then((position) async {
+      PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+        kGoogleApiKey,
+        PointLatLng(position.latitude, position.longitude),
+        PointLatLng(selectedlat, selectedlng),
+      );
 
-    if (result.points.isNotEmpty) {
-      polylineCoordinates = result.points
-          .map((point) => LatLng(point.latitude, point.longitude))
-          .toList();
+      if (result.points.isNotEmpty) {
+        polylineCoordinates = result.points
+            .map((point) => LatLng(point.latitude, point.longitude))
+            .toList();
 
-      setState(() {
-        poly = Polyline(
-          strokeWidth: 5,
-          points: polylineCoordinates,
-          color: Colors.blue,
-        );
-        nameSearched = '';
-        navigated = false;
-        started = true;
-      });
-    }
+        setState(() {
+          poly = Polyline(
+            strokeWidth: 5,
+            points: polylineCoordinates,
+            color: Colors.blue,
+          );
+          nameSearched = '';
+          navigated = false;
+          started = true;
+        });
+      }
+    });
   }
 
   @override
